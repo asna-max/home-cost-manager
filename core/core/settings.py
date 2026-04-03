@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'users',
     'households',
     'bills',
+    'rest_framework',
 ]
 
 AUTH_USER_MODEL ='users.User'
