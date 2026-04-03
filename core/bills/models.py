@@ -1,6 +1,7 @@
 from django.db import models
 from households.models import Household
 
+
 class Bill(models.Model):
     BILL_TYPE_CHOICES = (
         ('electricity', 'Electricity'),
@@ -26,7 +27,7 @@ class Bill(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.title} - {self.amount}" 
+        return f"{self.title} - {self.amount}"
 
 
 # Create your models here.
