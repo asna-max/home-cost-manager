@@ -32,6 +32,11 @@ class BillDetailView(APIView):
     def get_object(self, pk):
         return get_object_or_404(Bill, pk=pk)
 
+    def get(self, request, pk):
+        bill = self.get_object(pk)
+        serializer = BillSerializer(bill)
+        return Response(serializer.data)
+
     def put(self, request, pk):
         bill = self.get_object(pk)
         serializer = BillSerializer(bill, data=request.data)
