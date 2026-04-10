@@ -24,15 +24,18 @@ class BillListView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        household_id = request.query_params.get('household')
+        household_id = request.data.get('household')
 
-        if not HouseholdMember.objects.filter(household_id=household_id, user=request.user).exists():
+        membership = HouseholdMember.objects.filter(
+            household_id=household_id, user=request.user).first()
+
+        if not membership:
             return Response({"error": "not allower"}, status=403)
 
         serializer = BillSerializer(data=request.data)
 
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(household=membership.household)
             return Response(serializer.data, status=201)
 
         return Response(serializer.errors, status=400)
