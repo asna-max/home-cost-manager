@@ -20,3 +20,36 @@ export async function getBills(token, householdId) {
   });
   return response.json();
 }
+
+export async function createBill(token, billData) {
+  const response = await fetch(`${API_BASE}/bills/`, {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(billData),
+  });
+  return response.json();
+}
+
+export async function deleteBill(token, id) {
+  await fetch(`${API_BASE}/bills/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export async function updateBill(token, id, data) {
+  const response = await fetch(`${API_BASE}/bills/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
