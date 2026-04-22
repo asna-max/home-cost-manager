@@ -1,70 +1,42 @@
 import { useEffect, useState } from "react";
-import { getBills, createBill, deleteBill, updateBill } from "../services/api";
+import { getBills, deleteBill, updateBill } from "../services/api";
+import { BASE_URL } from "../services/api";
 
-export default function Bills({ token }) {
+export default function Bills({ token, selectedHousehold }) {
   const [bills, setBills] = useState([]);
-  const [title, setTitle] = useState("");
-  const [amount, setAmount] = useState("");
 
-  // LOAD
+  // Daten laden
   useEffect(() => {
-    async function fetchBills() {
-      const data = await getBills(token, 2); 
+    if (!token || !selectedHousehold) return;
+
+    const fetchBills = async () => {
+      const data = await getBills(token, selectedHousehold);
 
       if (Array.isArray(data)) {
         setBills(data);
       } else {
         setBills([]);
       }
-    }
-
-    if (token) {
-      fetchBills();
-    }
-  }, [token]);
-
-  // CREATE
-  const handleCreate = async () => {
-    const newBill = {
-      household: 1,
-      title,
-      bill_type: "electricity",
-      amount: parseFloat(amount),
-      period_from: "2026-04-01",
-      period_to: "2026-04-30",
-      due_date: "2026-05-10",
-      is_paid: false,
     };
 
-    await createBill(token, newBill);
+    fetchBills();
+  }, [token, selectedHousehold]);
 
-    const data = await getBills(token, 1);
-    if (Array.isArray(data)) {
-      setBills(data);
-    }
-
-    setTitle("");
-    setAmount("");
-  };
-
-  // DELETE
+  // Delete
   const handleDelete = async (id) => {
     await deleteBill(token, id);
-
-    setBills((prevBills) => prevBills.filter((b) => b.id !== id));
+    setBills((prev) => prev.filter((b) => b.id !== id));
   };
 
-  // UPDATE
-  const handleUpdate = async (bill) => {
+  // Toggle Status (paid/unpaid)
+  const handleToggleStatus = async (bill) => {
     const updated = {
-      ...bill,
-      title: bill.title + " (updated)",
+      is_paid: !bill.is_paid,
     };
 
     const response = await updateBill(token, bill.id, updated);
-
-    setBills((prevBills) =>
-      prevBills.map((b) => (b.id === bill.id ? response : b))
+    setBills((prev) =>
+      prev.map((b) => (b.id === bill.id ? { ...b, ...response } : b)),
     );
   };
 
@@ -72,43 +44,65 @@ export default function Bills({ token }) {
     <div>
       <h2>Bills</h2>
 
-      <div style={{ marginBottom: "20px" }}>
-        <input
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+      {bills.length === 0 ? (
+        <p>No bills found</p>
+      ) : (
+        <table border="1" cellPadding="10">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Period From</th>
+              <th>Period To</th>
+              <th>Due Date</th>
+              <th>Consumption</th>
+              <th>Amount</th>
+              <th>View</th>
+              <th>Status</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
 
-        <input
-          placeholder="Amount"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
+          <tbody>
+            {bills.map((bill) => (
+              <tr key={bill.id}>
+                <td>{bill.title}</td>
+                <td>{bill.bill_type}</td>
+                <td>{bill.period_from}</td>
+                <td>{bill.period_to}</td>
+                <td>{bill.due_date}</td>
+                <td>{bill.consumption}</td>
+                <td>{bill.amount}</td>
 
-        <button onClick={handleCreate} disabled={!title || !amount}>
-          Add Bill
-        </button>
-      </div>
-
-      <div>
-        {Array.isArray(bills) && bills.length > 0 ? (
-          bills.map((bill) => (
-            <div key={bill.id}>
-              {bill.title} - {bill.amount}
-
-              <button onClick={() => handleUpdate(bill)}>
-                Update
-              </button>
-
-              <button onClick={() => handleDelete(bill.id)}>
-                Delete
-              </button>
-            </div>
-          ))
-        ) : (
-          <p>No bills found</p>
-        )}
-      </div>
+                {/* View */}
+                <td>
+                  {bill.file ? (
+                    <a
+                      href={`${BASE_URL}${bill.file}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      View
+                    </a>
+                  ) : (
+                    "No file"
+                  )}
+                </td>
+                {/* Status Toggle */}
+                <td>
+                  <button onClick={() => handleToggleStatus(bill)}>
+                    {bill.is_paid ? "Paid ✅" : "Unpaid ❌"}
+                  </button>
+                </td>
+                {/* Delete */}
+                <td>
+                  <button onClick={() => handleDelete(bill.id)}>Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

@@ -65,6 +65,16 @@ class BillDetailView(APIView):
 
         return Response(serializer.errors, status=400)
 
+    def patch(self, request, pk):
+        bill = self.get_object(pk, request.user)
+        serializer = BillSerializer(bill, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=400)
+
     def delete(self, request, pk):
         bill = self.get_object(pk, request.user)
         bill.delete()
