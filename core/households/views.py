@@ -102,3 +102,34 @@ class InvitationAcceptView(APIView):
         invitation.save()
 
         return Response({"message": "Joined household"})
+
+
+class InvitationListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        invitations = Invitation.objects.filter(
+            email=request.user.email,
+            status='pending'
+        )
+
+        serializer = InvitationSerializer(invitations, many=True)
+        return Response(serializer.data)
+
+
+class InvitationDeclineView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        invitation = get_object_or_404(Invitation, pk=pk)
+
+        if invitation.status != request.user.email:
+            return Response({"error": "Not allowed"}, status=403)
+
+        if invitation.status != 'pendig':
+            return Response({"error": "Already handled"}, status=400)
+
+        invitation.status = 'declined'
+        invitation.save()
+
+        return Response({"message": "Invitation declined"})
