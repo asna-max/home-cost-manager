@@ -1,22 +1,30 @@
 import { useState } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  Link,
-} from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Login from "./pages/Login";
 import Bills from "./pages/Bills";
-import Invitations from "./pages/Invitations";
-import HouseholdSwitcher from "./components/HouseholdSwitcher";
+import Layout from "./components/Layout";
 
 function App() {
   // Token direkt aus localStorage laden
   const [token, setToken] = useState(() => {
     return localStorage.getItem("token");
   });
+
+  const user = token
+    ? (() => {
+        try {
+          const decoded = jwtDecode(token);
+          return {
+            name: decoded.username || "User",
+            email: decoded.email || "no-email",
+          };
+        } catch {
+          return null;
+        }
+      })()
+    : null;
 
   // Globaler Household State
   const [selectedHousehold, setSelectedHousehold] = useState(null);
@@ -33,34 +41,27 @@ function App() {
         <Login setToken={setToken} />
       ) : (
         <>
-          {/* NAVIGATION */}
-          <nav style={{ marginBottom: "20px" }}>
-            <HouseholdSwitcher
+          {
+            <Layout
               token={token}
+              user={user}
+              handleLogout={handleLogout}
               selectedHousehold={selectedHousehold}
               setSelectedHousehold={setSelectedHousehold}
-            />
-            <Link to="/bills">Bills</Link> |{" "}
-            <Link to="/invitations">Invitations</Link> |{" "}
-            <button onClick={handleLogout}>Logout</button>
-          </nav>
-
-          {/* ROUTES */}
-          <Routes>
-            <Route
-              path="/bills"
-              element={
-                <Bills token={token} selectedHousehold={selectedHousehold} />
-              }
-            />
-
-            <Route
-              path="/invitations"
-              element={<Invitations token={token} />}
-            />
-
-            <Route path="*" element={<Navigate to="/bills" />} />
-          </Routes>
+            >
+              <Routes>
+                <Route
+                  path="/bills"
+                  element={
+                    <Bills
+                      token={token}
+                      selectedHousehold={selectedHousehold}
+                    />
+                  }
+                />
+              </Routes>
+            </Layout>
+          }
         </>
       )}
     </Router>

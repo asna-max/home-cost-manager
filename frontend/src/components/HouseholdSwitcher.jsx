@@ -17,7 +17,6 @@ export default function HouseholdSwitcher({
       if (Array.isArray(data)) {
         setHouseholds(data);
 
-        // 🔥 erstes Household automatisch setzen
         if (data.length > 0 && !selectedHousehold) {
           setSelectedHousehold(data[0].id);
         }
@@ -29,9 +28,9 @@ export default function HouseholdSwitcher({
 
   return (
     <select
+      className="household-select"
       value={selectedHousehold || ""}
       onChange={(e) => setSelectedHousehold(Number(e.target.value))}
-      style={{ marginRight: "10px" }}
     >
       {households.map((h) => (
         <option key={h.id} value={h.id}>

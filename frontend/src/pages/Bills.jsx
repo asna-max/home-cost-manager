@@ -1,134 +1,114 @@
 import { useEffect, useState } from "react";
-import { getBills, deleteBill, updateBill } from "../services/api";
-import { BASE_URL } from "../services/api";
+import { getBills, updateBill, BASE_URL, deleteBill } from "../services/api";
+import { FaEye, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
 
 export default function Bills({ token, selectedHousehold }) {
   const [bills, setBills] = useState([]);
+
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [yearFilter, setYearFilter] = useState("all");
 
-  // Daten laden
+  // LOAD DATA
   useEffect(() => {
     if (!token || !selectedHousehold) return;
 
     const fetchBills = async () => {
       const data = await getBills(token, selectedHousehold);
-
-      if (Array.isArray(data)) {
-        setBills(data);
-      } else {
-        setBills([]);
-      }
+      setBills(Array.isArray(data) ? data : []);
     };
 
     fetchBills();
   }, [token, selectedHousehold]);
 
-  // Delete
+  // DELETE
   const handleDelete = async (id) => {
     await deleteBill(token, id);
     setBills((prev) => prev.filter((b) => b.id !== id));
   };
 
-  // Toggle Status (paid/unpaid)
+  // TOGGLE STATUS
   const handleToggleStatus = async (bill) => {
-    const updated = {
+    const response = await updateBill(token, bill.id, {
       is_paid: !bill.is_paid,
-    };
+    });
 
-    const response = await updateBill(token, bill.id, updated);
     setBills((prev) =>
       prev.map((b) => (b.id === bill.id ? { ...b, ...response } : b)),
     );
   };
 
-  const filteredBills = bills.filter((bill) => {
-    // Type
-    if (typeFilter !== "all" && bill.bill_type != typeFilter) {
-      return false;
-    }
+  // YEARS (dynamic)
+  const years = [
+    ...new Set(bills.map((b) => new Date(b.period_from).getFullYear())),
+  ].sort((a, b) => b - a);
 
-    // Status
+  // FILTER LOGIC
+  const filteredBills = bills.filter((bill) => {
+    if (typeFilter !== "all" && bill.bill_type !== typeFilter) return false;
     if (statusFilter === "paid" && !bill.is_paid) return false;
     if (statusFilter === "unpaid" && bill.is_paid) return false;
 
-    // Year
     if (yearFilter !== "all") {
-      const billyear = new Date(bill.period_from).getFullYear().toString();
-      if (billyear !== yearFilter) return false;
+      const y = new Date(bill.period_from).getFullYear().toString();
+      if (y !== yearFilter) return false;
     }
 
     return true;
   });
 
-  const year = [
-    ...new Set(bills.map((b) => new Date(b.period_from).getFullYear())),
-  ].sort((a, b) => b - a);
-
   return (
     <div>
-      <h2>Bills</h2>
-      <div style={{ marginBottom: "15px" }}>
-        {/* TYPE */}
-        <select
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
-        >
+      {/* FILTER */}
+      <div className="filters">
+        <select onChange={(e) => setTypeFilter(e.target.value)}>
           <option value="all">All Types</option>
           <option value="electricity">Electricity</option>
           <option value="water">Water</option>
           <option value="heating">Heating</option>
           <option value="other">Other</option>
         </select>
-        {/* STATUS */}
-        <select
-          // value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
+
+        <select onChange={(e) => setStatusFilter(e.target.value)}>
           <option value="all">All Status</option>
           <option value="paid">Paid</option>
           <option value="unpaid">Unpaid</option>
         </select>
 
-        {/* YEAR */}
-        <select
-          value={yearFilter}
-          onChange={(e) => setYearFilter(e.target.value)}
-        >
+        <select onChange={(e) => setYearFilter(e.target.value)}>
           <option value="all">All Years</option>
-
-          {year.map((year) => (
-            <option key={year} value={year}>
-              {year}
+          {years.map((y) => (
+            <option key={y} value={y}>
+              {y}
             </option>
           ))}
         </select>
+
+        <button
+          onClick={() => {
+            setTypeFilter("all");
+            setStatusFilter("all");
+            setYearFilter("all");
+          }}
+        >
+          Reset
+        </button>
       </div>
-      <button
-        onClick={() => {
-          setTypeFilter("all");
-          setStatusFilter("all");
-          setYearFilter("all");
-        }}
-      >
-        Reset Filters
-      </button>
-      {filteredBills.length === 0 ? (
-        <p>No bills found</p>
-      ) : (
-        <table border="1" cellPadding="10">
+
+      {/* TABLE */}
+      <div className="table-wrapper">
+        <table className="table">
           <thead>
             <tr>
-              <th>Title</th>
-              <th>Type</th>
-              <th>Period From</th>
-              <th>Period To</th>
-              <th>Due Date</th>
+              <th className="col-title">Title</th>
+              <th className="col-type">Type</th>
+              <th className="col-date">From</th>
+              <th className="col-date">To</th>
+              <th className="col-date">Due</th>
               <th>Consumption</th>
-              <th>Amount</th>
+              <th className="col-amount">Amount</th>
               <th>View</th>
-              <th>Status</th>
+              <th className="status-col">Status</th>
               <th>Delete</th>
             </tr>
           </thead>
@@ -136,13 +116,17 @@ export default function Bills({ token, selectedHousehold }) {
           <tbody>
             {filteredBills.map((bill) => (
               <tr key={bill.id}>
-                <td>{bill.title}</td>
-                <td>{bill.bill_type}</td>
-                <td>{bill.period_from}</td>
-                <td>{bill.period_to}</td>
-                <td>{bill.due_date}</td>
+                <td className="col-title" title={bill.title}>
+                  {bill.title}
+                </td>
+                <td className="col-type" title={bill.bill_type}>
+                  {bill.bill_type}
+                </td>
+                <td className="col-date">{bill.period_from}</td>
+                <td className="col-date">{bill.period_to}</td>
+                <td className="col-date">{bill.due_date}</td>
                 <td>{bill.consumption}</td>
-                <td>{bill.amount}</td>
+                <td className="col-amount">{bill.amount}</td>
 
                 {/* View */}
                 <td>
@@ -151,28 +135,39 @@ export default function Bills({ token, selectedHousehold }) {
                       href={`${BASE_URL}${bill.file}`}
                       target="_blank"
                       rel="noreferrer"
+                      className="icon-btn"
                     >
-                      View
+                      <FaEye />
                     </a>
                   ) : (
-                    "No file"
+                    "-"
                   )}
                 </td>
-                {/* Status Toggle */}
-                <td>
-                  <button onClick={() => handleToggleStatus(bill)}>
-                    {bill.is_paid ? "Paid ✅" : "Unpaid ❌"}
+
+                {/* Status */}
+                <td className="status-col">
+                  <button
+                    className="icon-btn status"
+                    onClick={() => handleToggleStatus(bill)}
+                  >
+                    {bill.is_paid ? <FaCheck /> : <FaTimes />}
                   </button>
                 </td>
+
                 {/* Delete */}
                 <td>
-                  <button onClick={() => handleDelete(bill.id)}>Delete</button>
+                  <button
+                    className="icon-btn delete"
+                    onClick={() => handleDelete(bill.id)}
+                  >
+                    <FaTrash />
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-      )}
+      </div>
     </div>
   );
 }
