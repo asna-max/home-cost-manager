@@ -7,6 +7,9 @@ from rest_framework import status
 from households.models import HouseholdMember
 from rest_framework.permissions import IsAuthenticated
 
+from services.extractor import extract_bill
+from rest_framework.parsers import MultiPartParser
+
 
 class BillListView(APIView):
     permission_classes = [IsAuthenticated]
@@ -79,3 +82,27 @@ class BillDetailView(APIView):
         bill = self.get_object(pk, request.user)
         bill.delete()
         return Response(status=204)
+
+
+class ExtractBillView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser]
+
+    def post(self, request):
+        file = request.FILES.get("file")
+
+        if not file:
+            return Response({"error": "No file uploaded "}, status=400)
+
+        print("===== FILE DEBUG =====")
+        print("FILES NAME:", file.name)
+        print("FILES TYPE:", file.content_type)
+        print("FILES SIZE:", file.size)
+
+        try:
+            result = extract_bill(file)
+            return Response(result, status=200)
+
+        except Exception as e:
+            print(" ERROR:", str(e))
+            return Response({"error": str(e)}, status=500)
