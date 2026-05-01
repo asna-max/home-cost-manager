@@ -1,30 +1,33 @@
 import { useEffect, useState } from "react";
-import { getHouseholds } from "../services/api";
+import { getHouseholds } from "../services/householdService";
 
 export default function HouseholdSwitcher({
-  token,
   selectedHousehold,
   setSelectedHousehold,
 }) {
   const [households, setHouseholds] = useState([]);
 
   useEffect(() => {
-    if (!token) return;
-
     const fetchData = async () => {
-      const data = await getHouseholds(token);
+      try {
+        const data = await getHouseholds();
 
-      if (Array.isArray(data)) {
-        setHouseholds(data);
+        console.log("Households:", data);
 
-        if (data.length > 0 && !selectedHousehold) {
-          setSelectedHousehold(data[0].id);
+        if (Array.isArray(data)) {
+          setHouseholds(data);
+
+          if (!selectedHousehold && data.length > 0) {
+            setSelectedHousehold(data[0].id);
+          }
         }
+      } catch (err) {
+        console.error("Failed to load households:", err);
       }
     };
 
     fetchData();
-  }, [token]);
+  }, [selectedHousehold]);
 
   return (
     <select

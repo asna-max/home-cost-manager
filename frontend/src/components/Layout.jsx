@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import HouseholdSwitcher from "./HouseholdSwitcher";
 import UserMenu from "./UserMenu";
 
@@ -6,55 +6,68 @@ export default function Layout({
   children,
   user,
   handleLogout,
-  token,
   selectedHousehold,
   setSelectedHousehold,
 }) {
-  const path = window.location.pathname.replace("/", "") || "dashboard";
-  const title = path.charAt(0).toUpperCase() + path.slice(1);
+  const location = useLocation();
+
+  const path = location.pathname.replace("/", "") || "dashboard";
+
+  const titleMap = {
+    dashboard: "Dashboard",
+    home: "Home Profile",
+    bills: "Bills",
+    upload: "Upload Bill",
+    settings: "Settings",
+  };
+
+  const title = titleMap[path] || "App";
 
   return (
     <div className="container">
-      {/* Sidebar */}
-      <div className="sidebar">
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      {/* SIDEBAR */}
+      <aside className="sidebar">
+        <nav className="sidebar-nav">
           <SidebarLink to="/dashboard" label="Dashboard" path={path} />
           <SidebarLink to="/home" label="Home Profile" path={path} />
           <SidebarLink to="/bills" label="Bills" path={path} />
           <SidebarLink to="/upload" label="Upload Bill" path={path} />
           <SidebarLink to="/settings" label="Settings" path={path} />
-        </div>
+        </nav>
 
-        <button onClick={handleLogout}>Logout</button>
-      </div>
+        <button className="logout-btn" onClick={handleLogout}>
+          Logout
+        </button>
+      </aside>
 
-      {/* Main */}
-      <div className="main">
-        {/* Topbar */}
-        <div className="topbar">
+      {/* MAIN */}
+      <main className="main">
+        {/* HEADER */}
+        <div className="page-header">
           <div>
-            <h2 style={{ margin: 0 }}>{title}</h2>
-
-            <div style={{ marginTop: "12px" }}>
-              <HouseholdSwitcher
-                token={token}
-                selectedHousehold={selectedHousehold}
-                setSelectedHousehold={setSelectedHousehold}
-              />
-            </div>
+            <h1 className="page-title">{title}</h1>
           </div>
 
-          <div>
+          <div className="header-right">
             {user && <UserMenu user={user} handleLogout={handleLogout} />}
+
+            <HouseholdSwitcher
+              selectedHousehold={selectedHousehold}
+              setSelectedHousehold={setSelectedHousehold}
+            />
           </div>
         </div>
 
+        {/* CONTENT */}
         {children}
-      </div>
+      </main>
     </div>
   );
 }
 
+/* ============================= */
+/* Sidebar Link */
+/* ============================= */
 function SidebarLink({ to, label, path }) {
   const isActive = path === to.replace("/", "");
 
