@@ -3,7 +3,7 @@ import {
   getInvitations,
   acceptInvitation,
   declineInvitation,
-} from "../services/api";
+} from "../services/householdService";
 
 export default function Invitations({ token }) {
   const [invitations, setInvitations] = useState([]);
