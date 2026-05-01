@@ -20,6 +20,12 @@ export default function UploadBill({ selectedHousehold }) {
     notes: "",
   });
 
+  const getUnit = () => {
+    if (billType === "electricity" || billType === "heating") return "kWh";
+    if (billType === "water") return "m³";
+    return "";
+  };
+
   // =========================
   // CLEANUP
   // =========================
@@ -106,7 +112,7 @@ export default function UploadBill({ selectedHousehold }) {
     setPreviewUrl(null);
 
     setFormData({
-      bill_type: "",
+      bill_type: billType,
       amount: "",
       due_date: "",
       consumption: "",
@@ -196,45 +202,69 @@ export default function UploadBill({ selectedHousehold }) {
 
           {/* FORM */}
           <div className="form-grid">
+            <label>Bill Type:</label>
+            <div className="input">
+              <input value={formData.bill_type} disabled />
+            </div>
+
             <label>Period From:</label>
-            <input
-              value={formData.period_from}
-              onChange={(e) =>
-                setFormData({ ...formData, period_from: e.target.value })
-              }
-            />
+            <div className="input">
+              <input
+                type="date"
+                value={formData.period_from}
+                onChange={(e) =>
+                  setFormData({ ...formData, period_from: e.target.value })
+                }
+              />
+            </div>
 
             <label>Period To:</label>
-            <input
-              value={formData.period_to}
-              onChange={(e) =>
-                setFormData({ ...formData, period_to: e.target.value })
-              }
-            />
+            <div className="input">
+              <input
+                type="date"
+                value={formData.period_to}
+                onChange={(e) =>
+                  setFormData({ ...formData, period_to: e.target.value })
+                }
+              />
+            </div>
 
-            <label>Consumption:</label>
-            <input
-              value={formData.consumption}
-              onChange={(e) =>
-                setFormData({ ...formData, consumption: e.target.value })
-              }
-            />
+            {billType !== "other" && (
+              <>
+                <label>Consumption:</label>
+                <div className="input">
+                  <input
+                    value={formData.consumption}
+                    onChange={(e) =>
+                      setFormData({ ...formData, consumption: e.target.value })
+                    }
+                  />
+                  <span className="unit">{getUnit()}</span>
+                </div>
+              </>
+            )}
 
             <label>Due Date:</label>
-            <input
-              value={formData.due_date}
-              onChange={(e) =>
-                setFormData({ ...formData, due_date: e.target.value })
-              }
-            />
+            <div className="input">
+              <input
+                type="date"
+                value={formData.due_date}
+                onChange={(e) =>
+                  setFormData({ ...formData, due_date: e.target.value })
+                }
+              />
+            </div>
 
             <label>Amount:</label>
-            <input
-              value={formData.amount}
-              onChange={(e) =>
-                setFormData({ ...formData, amount: e.target.value })
-              }
-            />
+            <div className="input">
+              <input
+                value={formData.amount}
+                onChange={(e) =>
+                  setFormData({ ...formData, amount: e.target.value })
+                }
+              />
+              <span className="unit">CHF</span>
+            </div>
 
             <label>Paid:</label>
             <input
@@ -255,10 +285,16 @@ export default function UploadBill({ selectedHousehold }) {
           </div>
 
           {/* ACTIONS */}
-          <div style={{ marginTop: "20px" }}>
-            <button onClick={resetForm}>Cancel</button>
 
-            <button onClick={handleSave} disabled={loading}>
+          <div className="form-actions" style={{ marginTop: "20px" }}>
+            <button className="cancel-btn" onClick={resetForm}>
+              Cancel
+            </button>
+            <button
+              className="confirm-btn"
+              onClick={handleSave}
+              disabled={loading}
+            >
               {loading ? "Saving..." : "Confirm & Save"}
             </button>
           </div>
