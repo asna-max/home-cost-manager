@@ -35,11 +35,16 @@ class BillListView(APIView):
         if not membership:
             return Response({"error": "not allower"}, status=403)
 
-        serializer = BillSerializer(data=request.data)
+        file = request.FILES.get("file")
+
+        data = request.data.copy()
+
+        serializer = BillSerializer(data=data)
 
         if serializer.is_valid():
             serializer.save(household=membership.household,
-                            created_by_user=request.user)
+                            created_by_user=request.user,
+                            file=file)
             return Response(serializer.data, status=201)
 
         return Response(serializer.errors, status=400)
