@@ -2,22 +2,9 @@ import re
 from datetime import datetime
 
 
-# Regex
-# \d+        → eine oder mehrere Zahlen
-# [.,]       → Punkt oder Komma
-# \d{2}      → genau 2 Nachkommastellen
-# (Due Date|Fällig) → keyword
-# .*?               → irgendwas dazwischen
-# (\d{2}...)        → Datum
-
-
-def parse_amount(text):
-    match = re.search(r'(\d+[.,]\d{2})\s?(CHF|EUR)?', text)
-    if match:
-        return float(match.group(1).replace(",", "."))
-    return None
-
-
+# =========================
+# DATE PARSER
+# =========================
 def parse_date(date_str):
     for fmt in ("%d.%m.%Y", "%Y-%m-%d"):
         try:
@@ -27,17 +14,55 @@ def parse_date(date_str):
     return None
 
 
-def parse_due_date(text):
+# =========================
+# CLEAN TEXT
+# =========================
+def clean_text(text):
+    text = text.replace("\n", " ")
+    text = text.replace("\r", " ")
+    return " ".join(text.split())
+
+
+# =========================
+# AMOUNT
+# =========================
+def extract_amount(text):
+    patterns = [
+        r"Gesamttotal.*?CHF.*?([0-9\.\'\,]+)",
+        r"Zu bezahlender Betrag.*?CHF\s*([0-9\.\'\,]+)",
+        r"Total.*?CHF\s*([0-9\.\'\,]+)",
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            amount = match.group(1)
+            amount = amount.replace("'", "").replace(",", ".")
+            return float(amount)
+
+    return None
+
+
+# =========================
+# DUE DATE
+# =========================
+def extract_due_date(text):
     match = re.search(
-        r'(Due Date|Fällig).*?(\d{2}[.\-]\d{2}[.\-]\d{4})', text, re.IGNORECASE)
+        r"(Zahlbar bis|Fällig).*?(\d{2}\.\d{2}\.\d{4})",
+        text,
+        re.IGNORECASE
+    )
     if match:
         return parse_date(match.group(2))
     return None
 
 
-def parse_period(text):
+# =========================
+# PERIOD
+# =========================
+def extract_period(text):
     match = re.search(
-        r'(\d{2}[.\-]\d{2}[.\-]\d{4}).*?(\d{2}[.\-]\d{2}[.\-]\d{4})',
+        r"(\d{2}\.\d{2}\.\d{4}).*?(\d{2}\.\d{2}\.\d{4})",
         text
     )
     if match:
@@ -48,25 +73,58 @@ def parse_period(text):
     return {}
 
 
-def parse_type(text):
-    text_lower = text.lower()
+# =========================
+# CONSUMPTIONS
+# =========================
+def extract_consumptions(text):
+    data = {}
 
-    if "electric" in text_lower:
-        return "electricity"
-    if "water" in text_lower:
+    # Strom / Heizung
+    kwh = re.findall(r"([\d'\.]+)\s*kWh", text)
+    if kwh:
+        values = [float(v.replace("'", "")) for v in kwh]
+        data["consumption_kwh"] = max(values)
+
+    # Wasser
+    m3 = re.findall(r"([\d'\.]+)\s*m3", text)
+    if m3:
+        values = [float(v.replace("'", "")) for v in m3]
+        data["consumption_m3"] = max(values)
+
+    return data
+
+
+# =========================
+# BILL TYPE
+# =========================
+def detect_bill_type(text, consumptions):
+    if "consumption_m3" in consumptions:
         return "water"
-    if "heating" in text_lower:
+
+    if "consumption_kwh" in consumptions:
+        return "electricity"
+
+    if "heizung" in text.lower():
         return "heating"
 
     return "other"
 
 
+# =========================
+# MAIN
+# =========================
 def parse_bill_text(text):
+    text = clean_text(text)
+
     data = {}
 
-    data["amount"] = parse_amount(text)
-    data["due_date"] = parse_due_date(text)
-    data.update(parse_period(text))
-    data["bill_type"] = parse_type(text)
+    data["amount"] = extract_amount(text)
+    data["due_date"] = extract_due_date(text)
+    data.update(extract_period(text))
+
+    consumptions = extract_consumptions(text)
+    data.update(consumptions)
+
+    data["bill_type"] = detect_bill_type(text, consumptions)
 
     return data
