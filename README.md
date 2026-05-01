@@ -1,93 +1,214 @@
-# homeCostManager
+# 🏠 HomeCostManager
 
+Semesterarbeit im CAS Full Stack Development FS 26.
 
+Web-Applikation zur Verwaltung von Haushaltskosten (Strom, Wasser, Heizung) mit OCR-Unterstützung zur automatischen Rechnungserkennung.
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## 💡 Projektidee
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Die Anwendung ermöglicht es, Rechnungen einfach hochzuladen und automatisch relevante Daten zu extrahieren:
 
-## Add your files
+- Betrag
+- Verbrauch
+- Fälligkeitsdatum
+- Abrechnungszeitraum
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+Zusätzlich können mehrere Haushalte verwaltet und Benutzer eingeladen werden.
 
+---
+
+## ⚙️ Installation
+
+---
+
+## 📋 Voraussetzungen
+
+- Python (>= 3.10)
+- Node.js (>= 18)
+- Ports frei:
+  - Backend: **8000**
+  - Frontend: **5173**
+
+---
+
+## 🐍 Backend (Django)
+
+### 1. Terminal öffnen
+
+```bash id="h9z0bf"
+cd core
 ```
-cd existing_repo
-git remote add origin https://git.ffhs.ch/ashok.nadesu/homecostmanager.git
-git branch -M main
-git push -uf origin main
+
+---
+
+### 2. Virtuelle Umgebung erstellen
+
+```bash id="7z6p1n"
+python -m venv venv
 ```
 
-## Integrate with your tools
+---
 
-* [Set up project integrations](https://git.ffhs.ch/ashok.nadesu/homecostmanager/-/settings/integrations)
+### 3. Aktivieren
 
-## Collaborate with your team
+**Windows:**
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+```bash id="w6b37k"
+venv\Scripts\activate
+```
 
-## Test and Deploy
+**Mac/Linux:**
 
-Use the built-in continuous integration in GitLab.
+```bash id="qfbjxu"
+source venv/bin/activate
+```
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+---
 
-***
+### 4. Abhängigkeiten installieren
 
-# Editing this README
+```bash id="uxv7qp"
+pip install -r requirements.txt
+```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+---
 
-## Suggestions for a good README
+### 5. .env Datei erstellen
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+Pfad: `core/.env`
 
-## Name
-Choose a self-explaining name for your project.
+```env id="9kw5n3"
+SECRET_KEY=your-secret-key
+DEBUG=True
+OCR_API_KEY=your-ocr-api-key
+```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+---
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+### 6. Migration ausführen
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+```bash id="l0ybdi"
+python manage.py migrate
+```
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+---
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### 7. Admin erstellen (optional)
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+```bash id="tb0gqa"
+python manage.py createsuperuser
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+---
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+### 8. Backend starten
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+```bash id="6qv6r8"
+python manage.py runserver
+```
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+👉 Backend läuft auf:
+http://127.0.0.1:8000
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+---
 
-## License
-For open source projects, say how it is licensed.
+## 🌐 Frontend (React)
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+### 1. Neues Terminal öffnen
+
+```bash id="3gq5i6"
+cd frontend
+```
+
+---
+
+### 2. Dependencies installieren
+
+```bash id="k4e9zo"
+npm install
+```
+
+---
+
+### 3. Frontend starten
+
+```bash id="j5tq4n"
+npm run dev
+```
+
+👉 Frontend läuft auf:
+http://localhost:5173
+
+---
+
+## 🔐 Login
+
+Nach dem Start:
+
+1. Benutzer registrieren oder Admin verwenden
+2. Login durchführen
+3. Haushalt auswählen
+
+---
+
+## 📄 Nutzung (Workflow)
+
+1. "Upload Bill" öffnen
+2. Rechnung hochladen (PDF oder Bild)
+3. OCR analysiert die Rechnung
+4. Daten prüfen und anpassen
+5. Speichern
+
+---
+
+## 🧱 Projektstruktur
+
+```id="06m32j"
+core/
+  ├── bills/
+  ├── households/
+  ├── services/
+  ├── users/
+
+frontend/
+  ├── src/
+  │   ├── components/
+  │   ├── pages/
+  │   ├── services/
+```
+
+---
+
+## 🔗 API (Auszug)
+
+| Endpoint              | Beschreibung     |
+| --------------------- | ---------------- |
+| `/api/bills/`         | Alle Rechnungen  |
+| `/api/bills/extract/` | OCR Verarbeitung |
+| `/api/households/`    | Haushalte        |
+
+---
+
+## ⚠️ Hinweise
+
+- `.env` ist nicht im Repository enthalten
+- `media/` wird nicht versioniert (Uploads)
+- OCR benötigt Internetverbindung
+- CORS ist für Port 5173 konfiguriert
+
+---
+
+## 🚀 Erweiterungen (Future Work)
+
+- Mobile Optimierung
+- Dashboard mit Statistiken
+- Export (PDF / Excel)
+- Bessere OCR-Erkennung
+
+---
+
+## 👨‍💻 Autor
+
+Ashok Nadesu
