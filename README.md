@@ -210,7 +210,7 @@ frontend/
 
 ## 📸 Screenshots
 
-_(Optional – für bessere Bewertung hinzufügen)_
+_TODO_
 
 ### Home Profile
 
