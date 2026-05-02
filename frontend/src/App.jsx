@@ -12,6 +12,7 @@ import Bills from "./pages/Bills";
 import UploadBill from "./pages/UploadBill";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import HomeProfile from "./components/HomeProfile";
 
 import { getToken, clearToken } from "./services/auth/authStore";
 
@@ -19,7 +20,9 @@ function App() {
   const [token, setToken] = useState(getToken());
   const [selectedHousehold, setSelectedHousehold] = useState(null);
 
-  // Auto Logout (aus apiClient Event)
+  // =========================
+  // AUTO LOGOUT
+  // =========================
   useEffect(() => {
     const handleUnauthorized = () => {
       clearToken();
@@ -33,7 +36,9 @@ function App() {
     };
   }, []);
 
-  //  User aus JWT 
+  // =========================
+  // USER AUS JWT
+  // =========================
   const user = useMemo(() => {
     if (!token) return null;
 
@@ -50,7 +55,9 @@ function App() {
     }
   }, [token]);
 
-  // Logout
+  // =========================
+  // LOGOUT
+  // =========================
   const handleLogout = () => {
     clearToken();
     setToken(null);
@@ -64,7 +71,7 @@ function App() {
           path="/"
           element={
             token ? (
-              <Navigate to="/bills" replace />
+              <Navigate to="/home" replace />
             ) : (
               <Navigate to="/login" replace />
             )
@@ -74,7 +81,7 @@ function App() {
         {/* LOGIN */}
         <Route path="/login" element={<Login setToken={setToken} />} />
 
-        {/* BILLS */}
+        {/* ================= BILLS ================= */}
         <Route
           path="/bills"
           element={
@@ -91,7 +98,7 @@ function App() {
           }
         />
 
-        {/* UPLOAD */}
+        {/* ================= UPLOAD ================= */}
         <Route
           path="/upload"
           element={
@@ -103,6 +110,28 @@ function App() {
                 setSelectedHousehold={setSelectedHousehold}
               >
                 <UploadBill selectedHousehold={selectedHousehold} />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ================= HOME PROFILE ================= */}
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <Layout
+                user={user}
+                handleLogout={handleLogout}
+                selectedHousehold={selectedHousehold}
+                setSelectedHousehold={setSelectedHousehold}
+              >
+                {({ refreshHouseholds }) => (
+                  <HomeProfile
+                    selectedHousehold={selectedHousehold}
+                    refreshHouseholds={refreshHouseholds}
+                  />
+                )}
               </Layout>
             </ProtectedRoute>
           }

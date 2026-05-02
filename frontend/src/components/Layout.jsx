@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import HouseholdSwitcher from "./HouseholdSwitcher";
 import UserMenu from "./UserMenu";
+import { getHouseholds } from "../services/householdService";
 
 export default function Layout({
   children,
@@ -10,6 +12,7 @@ export default function Layout({
   setSelectedHousehold,
 }) {
   const location = useLocation();
+  const [households, setHouseholds] = useState([]);
 
   const path = location.pathname.replace("/", "") || "dashboard";
 
@@ -23,9 +26,44 @@ export default function Layout({
 
   const title = titleMap[path] || "App";
 
+  // =========================
+  // LOAD HOUSEHOLDS
+  // =========================
+  useEffect(() => {
+    const fetchHouseholds = async () => {
+      try {
+        const data = await getHouseholds();
+
+        if (Array.isArray(data)) {
+          setHouseholds(data);
+
+          if (!selectedHousehold && data.length > 0) {
+            setSelectedHousehold(data[0].id);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load households:", err);
+      }
+    };
+
+    fetchHouseholds();
+  }, []);
+
+  // =========================
+  // REFRESH FUNCTION (für HomeProfile)
+  // =========================
+  const refreshHouseholds = async () => {
+    try {
+      const data = await getHouseholds();
+      setHouseholds(data);
+    } catch (err) {
+      console.error("Refresh failed:", err);
+    }
+  };
+
   return (
     <div className="container">
-      {/* SIDEBAR */}
+      {/* ================= SIDEBAR ================= */}
       <aside className="sidebar">
         <nav className="sidebar-nav">
           <SidebarLink to="/dashboard" label="Dashboard" path={path} />
@@ -40,7 +78,7 @@ export default function Layout({
         </button>
       </aside>
 
-      {/* MAIN */}
+      {/* ================= MAIN ================= */}
       <main className="main">
         {/* HEADER */}
         <div className="page-header">
@@ -52,6 +90,7 @@ export default function Layout({
             {user && <UserMenu user={user} handleLogout={handleLogout} />}
 
             <HouseholdSwitcher
+              households={households} // zentral gesteuert
               selectedHousehold={selectedHousehold}
               setSelectedHousehold={setSelectedHousehold}
             />
@@ -59,7 +98,9 @@ export default function Layout({
         </div>
 
         {/* CONTENT */}
-        {children}
+        {typeof children === "function"
+          ? children({ refreshHouseholds })
+          : children}
       </main>
     </div>
   );

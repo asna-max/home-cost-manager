@@ -7,7 +7,7 @@ import { ENDPOINTS } from "./api/endpoints";
 export async function getHouseholds() {
   try {
     const data = await apiRequest({
-      endpoint: ENDPOINTS.HOUSEHOLDS.LIST, // ✅ FIX
+      endpoint: ENDPOINTS.HOUSEHOLDS.LIST,
     });
 
     return Array.isArray(data)
@@ -26,9 +26,20 @@ export async function getHouseholds() {
 // =========================
 export function createHousehold(data) {
   return apiRequest({
-    endpoint: ENDPOINTS.HOUSEHOLDS.LIST, // ✅ FIX
+    endpoint: ENDPOINTS.HOUSEHOLDS.LIST,
     method: "POST",
     body: data,
+  });
+}
+
+// =========================
+// UPDATE HOUSEHOLD NAME
+// =========================
+export function updateHouseholdName(id, name) {
+  return apiRequest({
+    endpoint: `${ENDPOINTS.HOUSEHOLDS.LIST}${id}/`,
+    method: "PATCH",
+    body: { name },
   });
 }
 
@@ -37,7 +48,7 @@ export function createHousehold(data) {
 // =========================
 export function deleteHousehold(id) {
   return apiRequest({
-    endpoint: `${ENDPOINTS.HOUSEHOLDS.LIST}${id}`, // ⚠️ kein Slash!
+    endpoint: `${ENDPOINTS.HOUSEHOLDS.LIST}${id}/`,
     method: "DELETE",
   });
 }

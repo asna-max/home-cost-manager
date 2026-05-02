@@ -5,7 +5,7 @@ export const ENDPOINTS = {
 
   BILLS: {
     LIST: "bills/",
-    DETAIL: (id) => `bills/${id}`, 
+    DETAIL: (id) => `bills/${id}`,
     EXTRACT: "bills/extract/",
   },
 
@@ -14,5 +14,8 @@ export const ENDPOINTS = {
     INVITE_LIST: "households/invite/list/",
     ACCEPT: (id) => `households/invite/${id}/accept/`,
     DECLINE: (id) => `households/invite/${id}/decline/`,
+  },
+  HOMES: {
+    DETAIL: (id) => `households/homes/${id}/`,
   },
 };
