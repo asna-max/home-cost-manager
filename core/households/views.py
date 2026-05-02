@@ -1,11 +1,13 @@
+from households.serializers import HomeProfileSerializer
+from households.models import Household, HouseholdMember, HomeProfile
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 
-from households.models import Household, HouseholdMember, Invitation
-from households.serializers import HouseholdsSerializer, InvitationSerializer
+from households.models import Household, HouseholdMember, Invitation, HomeProfile
+from households.serializers import HouseholdsSerializer, InvitationSerializer, HomeProfileSerializer
 
 
 class HouseholdListCreateView(APIView):
@@ -133,3 +135,106 @@ class InvitationDeclineView(APIView):
         invitation.save()
 
         return Response({"message": "Invitation declined"})
+
+
+class HomeProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, household_id):
+        # Zugriff prüfen (User muss Mitglied sein)
+        is_member = HouseholdMember.objects.filter(
+            household_id=household_id,
+            user=request.user
+        ).exists()
+
+        if not is_member:
+            return Response(
+                {"error": "Not allowed"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Profil immer holen oder erstellen
+        profile, created = HomeProfile.objects.get_or_create(
+            household_id=household_id,
+            defaults={
+                "property_type": "rent",
+                "building_type": "brick",
+                "number_of_rooms": 1,
+                "city": "",
+                "heating_type": "gas",
+            }
+        )
+
+        serializer = HomeProfileSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # UPDATE PROFILE
+    def put(self, request, household_id):
+        # Zugriff prüfen
+        membership = HouseholdMember.objects.filter(
+            household_id=household_id,
+            user=request.user
+        ).first()
+
+        if not membership:
+            return Response(
+                {"error": "Not allowed"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        #  Nur Owner darf ändern (optional aber gut)
+        if membership.role != "owner":
+            return Response(
+                {"error": "Only owner can edit"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Profil holen oder erstellen
+        profile, created = HomeProfile.objects.get_or_create(
+            household_id=household_id,
+            defaults={
+                "property_type": "rent",
+                "building_type": "brick",
+                "number_of_rooms": 1,
+                "city": "",
+                "heating_type": "gas",
+            }
+        )
+
+        serializer = HomeProfileSerializer(
+            profile,
+            data=request.data,
+            partial=True  # erlaubt Teil-Updates
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class HouseholdUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        household = get_object_or_404(Household, pk=pk)
+
+        if household.owner != request.user:
+            return Response({"error": "Not allowed"}, status=403)
+
+        name = request.data.get("name")
+
+        if not name:
+            return Response({"error": "Name is required"}, status=400)
+
+        household.name = name
+        household.save()
+
+        return Response({
+            "id": household.id,
+            "name": household.name
+        })
+
+    def put(self, request, pk):
+        return self.patch(request, pk)  
