@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.shortcuts import get_object_or_404
 
 from households.models import Household, HouseholdMember, Invitation, HomeProfile
@@ -139,6 +140,7 @@ class InvitationDeclineView(APIView):
 
 class HomeProfileView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def get(self, request, household_id):
         # Zugriff prüfen (User muss Mitglied sein)
@@ -165,7 +167,8 @@ class HomeProfileView(APIView):
             }
         )
 
-        serializer = HomeProfileSerializer(profile)
+        serializer = HomeProfileSerializer(
+            profile, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # UPDATE PROFILE
@@ -204,7 +207,8 @@ class HomeProfileView(APIView):
         serializer = HomeProfileSerializer(
             profile,
             data=request.data,
-            partial=True  # erlaubt Teil-Updates
+            partial=True,  # erlaubt Teil-Updates
+            context={'request': request}
         )
 
         if serializer.is_valid():
@@ -237,4 +241,4 @@ class HouseholdUpdateView(APIView):
         })
 
     def put(self, request, pk):
-        return self.patch(request, pk)  
+        return self.patch(request, pk)

@@ -22,6 +22,21 @@ class HomeProfileSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
+    house_image = serializers.ImageField(required=False)
+
+    house_image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = HomeProfile
-        exclude = ['created_at', 'updated_at']
+        fields = '__all__'
+        read_only_fields = ['created_at', 'updated_at']
+
+    def get_house_image_url(self, obj):
+        request = self.context.get("request")
+
+        if obj.house_image:
+            if request:
+                return request.build_absolute_uri(obj.house_image.url)
+            return obj.house_image.url
+
+        return None
