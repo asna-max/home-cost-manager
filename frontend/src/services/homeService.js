@@ -23,5 +23,6 @@ export function saveHomeProfile(data, householdId) {
     endpoint: ENDPOINTS.HOMES.DETAIL(householdId),
     method: "PUT",
     body: data,
+    isFormData: true,
   });
 }

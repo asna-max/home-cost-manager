@@ -5,6 +5,7 @@ import { updateHouseholdName } from "../services/householdService";
 export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [preview, setPreview] = useState(null);
 
   const [formData, setFormData] = useState({
     household_name: "",
@@ -49,6 +50,12 @@ export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
           solar_installation_year: data.solar_installation_year || "",
           house_image: null,
         });
+
+        if (data.house_image_url) {
+          setPreview(data.house_image_url);
+        } else {
+          setPreview(null);
+        }
       } catch (err) {
         console.error("Load error:", err);
       }
@@ -79,25 +86,50 @@ export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
       // Household Name speichern
       if (formData.household_name) {
         await updateHouseholdName(selectedHousehold, formData.household_name);
-        await refreshHouseholds();
+        if (refreshHouseholds) {
+          await refreshHouseholds();
+        }
       }
 
-      // Profile sauber bauen (OHNE household_name)
-      const profileData = {
-        property_type: formData.property_type,
-        number_of_rooms: parseInt(formData.number_of_rooms),
-        city: formData.city,
-        year_built: formData.year_built || null,
-        building_type: formData.building_type,
-        heating_type: formData.heating_type,
-        heating_installation_year: formData.heating_installation_year || null,
-        floor_heating: formData.floor_heating,
-        solar_panels: formData.solar_panels,
-        solar_installation_year: formData.solar_installation_year || null,
-        house_image: formData.house_image,
-      };
+      // Form DATA
+      const form = new FormData();
 
-      await saveHomeProfile(profileData, selectedHousehold);
+      form.append("property_type", formData.property_type);
+      form.append("number_of_rooms", formData.number_of_rooms);
+      form.append("city", formData.city);
+
+      if (formData.year_built) form.append("year_built", formData.year_built);
+
+      if (formData.building_type)
+        form.append("building_type", formData.building_type);
+
+      if (formData.heating_type)
+        form.append("heating_type", formData.heating_type);
+
+      if (formData.heating_installation_year)
+        form.append(
+          "heating_installation_year",
+          formData.heating_installation_year,
+        );
+
+      form.append("floor_heating", formData.floor_heating ? "true" : "false");
+      form.append("solar_panels", formData.solar_panels ? "true" : "false");
+
+      if (formData.solar_installation_year)
+        form.append(
+          "solar_installation_year",
+          formData.solar_installation_year,
+        );
+
+      if (formData.house_image instanceof File) {
+        form.append("house_image", formData.house_image);
+      }
+
+      const result = await saveHomeProfile(form, selectedHousehold);
+
+      if (result?.house_image_url) {
+        setPreview(result.house_image_url);
+      }
 
       alert("Profile saved!");
     } catch (err) {
@@ -206,6 +238,19 @@ export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
           <option value="wood">Wood</option>
         </select>
 
+        {/* YEAR BUILT */}
+        <label>Year Built Heating installation year:</label>
+        <input
+          type="number"
+          value={formData.heating_installation_year}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              heating_installation_year: e.target.value,
+            })
+          }
+        />
+
         {/* FLOOR */}
         <label>Floor Heating:</label>
         <input
@@ -249,15 +294,34 @@ export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
         <label>Image:</label>
         <input
           type="file"
-          onChange={(e) =>
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files[0];
+
+            if (!file) return;
+
             setFormData({
               ...formData,
               house_image: e.target.files[0],
-            })
-          }
+            });
+            setPreview(URL.createObjectURL(file));
+          }}
         />
+        {/* PREVIEW */}
+        {preview && (
+          <div>
+            <img
+              src={preview}
+              alt="House"
+              style={{
+                width: "200px",
+                borderRadius: "10px",
+                marginTop: "10px",
+              }}
+            ></img>
+          </div>
+        )}
       </div>
-
       <div className="form-actions">
         <button className="cancel-btn">Cancel</button>
 
