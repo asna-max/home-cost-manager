@@ -6,6 +6,7 @@ export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [preview, setPreview] = useState(null);
+  const [originalData, setOriginalData] = useState(null);
 
   const [formData, setFormData] = useState({
     household_name: "",
@@ -36,7 +37,7 @@ export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
 
         if (!data) return;
 
-        setFormData({
+        const mappedData = {
           household_name: data.household_name || "",
           property_type: data.property_type || "rent",
           number_of_rooms: data.number_of_rooms || "",
@@ -49,13 +50,12 @@ export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
           solar_panels: data.solar_panels || false,
           solar_installation_year: data.solar_installation_year || "",
           house_image: null,
-        });
+          house_image_url: data.house_image_url || null,
+        };
 
-        if (data.house_image_url) {
-          setPreview(data.house_image_url);
-        } else {
-          setPreview(null);
-        }
+        setFormData(mappedData);
+        setOriginalData(mappedData);
+        setPreview(mappedData.house_image_url);
       } catch (err) {
         console.error("Load error:", err);
       }
@@ -65,6 +65,32 @@ export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
 
     fetchProfile();
   }, [selectedHousehold]);
+
+  // =========================
+  // CHANGE DETECTION
+  // =========================
+  const isDirty =
+    formData &&
+    originalData &&
+    (JSON.stringify({
+      ...formData,
+      house_image: null,
+    }) !==
+      JSON.stringify({
+        ...originalData,
+        house_image: null,
+      }) ||
+      formData.house_image !== null);
+
+  // =========================
+  // CANCEL
+  // =========================
+  const handleCancel = () => {
+    if (!originalData) return;
+
+    setFormData(originalData);
+    setPreview(originalData.house_image_url || null);
+  };
 
   // =========================
   // SAVE
@@ -127,9 +153,15 @@ export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
 
       const result = await saveHomeProfile(form, selectedHousehold);
 
-      if (result?.house_image_url) {
-        setPreview(result.house_image_url);
-      }
+      const updatedData = {
+        ...formData,
+        house_image: null,
+        house_image_url: result?.house_image_url || preview,
+      };
+
+      setFormData(updatedData);
+      setOriginalData(updatedData);
+      setPreview(updatedData.house_image_url);
 
       alert("Profile saved!");
     } catch (err) {
@@ -302,7 +334,7 @@ export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
 
             setFormData({
               ...formData,
-              house_image: e.target.files[0],
+              house_image: file,
             });
             setPreview(URL.createObjectURL(file));
           }}
@@ -323,9 +355,19 @@ export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
         )}
       </div>
       <div className="form-actions">
-        <button className="cancel-btn">Cancel</button>
+        <button
+          className="cancel-btn"
+          onClick={handleCancel}
+          disabled={!isDirty}
+        >
+          Cancel
+        </button>
 
-        <button className="confirm-btn" onClick={handleSave} disabled={saving}>
+        <button
+          className="confirm-btn"
+          onClick={handleSave}
+          disabled={!isDirty || saving}
+        >
           {saving ? "Saving..." : "Save"}
         </button>
       </div>
