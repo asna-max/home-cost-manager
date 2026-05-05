@@ -6,6 +6,7 @@ import {
   getHouseholds,
 } from "../services/householdService";
 import { useNavigate } from "react-router-dom";
+import { buildFormData } from "../services/api/formUtils";
 
 export default function HomeProfile({
   selectedHousehold,
@@ -159,39 +160,7 @@ export default function HomeProfile({
       }
 
       // Form DATA
-      const form = new FormData();
-
-      form.append("property_type", formData.property_type);
-      form.append("number_of_rooms", formData.number_of_rooms);
-      form.append("city", formData.city);
-
-      if (formData.year_built) form.append("year_built", formData.year_built);
-
-      if (formData.building_type)
-        form.append("building_type", formData.building_type);
-
-      if (formData.heating_type)
-        form.append("heating_type", formData.heating_type);
-
-      if (formData.heating_installation_year)
-        form.append(
-          "heating_installation_year",
-          formData.heating_installation_year,
-        );
-
-      form.append("floor_heating", formData.floor_heating ? "true" : "false");
-      form.append("solar_panels", formData.solar_panels ? "true" : "false");
-
-      if (formData.solar_installation_year)
-        form.append(
-          "solar_installation_year",
-          formData.solar_installation_year,
-        );
-
-      if (formData.house_image instanceof File) {
-        form.append("house_image", formData.house_image);
-      }
-
+      const form = buildFormData(formData);
       const result = await saveHomeProfile(form, selectedHousehold);
 
       const updatedData = {
@@ -381,48 +350,42 @@ export default function HomeProfile({
           }}
         />
         {/* PREVIEW */}
-        {preview && (
-          <div>
-            <img
-              src={preview}
-              alt="House"
-              style={{
-                width: "200px",
-                borderRadius: "10px",
-                marginTop: "10px",
-              }}
-            ></img>
-          </div>
-        )}
+        <div className="image-preview-container">
+          {preview ? (
+            <img src={preview} alt="House" />
+          ) : (
+            <div className="placeholder">No Image</div>
+          )}
+        </div>
       </div>
-      <div
-        className="form-actions"
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        {isOwner && (
-          <button className="delete-btn" onClick={handleDelete}>
-            Delete
-          </button>
-        )}
-        <button
-          className="cancel-btn"
-          onClick={handleCancel}
-          disabled={!isDirty}
-        >
-          Cancel
-        </button>
 
-        <button
-          className="confirm-btn"
-          onClick={handleSave}
-          disabled={!isDirty || saving}
-        >
-          {saving ? "Saving..." : "Save"}
-        </button>
+      <div className="form-actions">
+        <div className="left-actions">
+          {isOwner ? (
+            <button className="delete-btn" onClick={handleDelete}>
+              Delete
+            </button>
+          ) : (
+            <div className="delete-placeholder" />
+          )}
+        </div>
+
+        <div className="right-actions">
+          <button
+            className="cancel-btn"
+            onClick={handleCancel}
+            disabled={!isDirty}
+          >
+            Cancel
+          </button>
+          <button
+            className="confirm-btn"
+            onClick={handleSave}
+            disabled={!isDirty || saving}
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
+        </div>
       </div>
     </div>
   );
