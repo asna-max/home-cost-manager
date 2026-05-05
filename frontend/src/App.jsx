@@ -126,10 +126,12 @@ function App() {
                 selectedHousehold={selectedHousehold}
                 setSelectedHousehold={setSelectedHousehold}
               >
-                {({ refreshHouseholds }) => (
+                {({ refreshHouseholds, isOwner }) => (
                   <HomeProfile
                     selectedHousehold={selectedHousehold}
                     refreshHouseholds={refreshHouseholds}
+                    isOwner={isOwner}
+                    setSelectedHousehold={setSelectedHousehold}
                   />
                 )}
               </Layout>

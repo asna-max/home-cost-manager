@@ -1,12 +1,24 @@
 from rest_framework import serializers
-from households.models import Household, Invitation, HomeProfile
+from households.models import Household, Invitation, HomeProfile, HouseholdMember
 
 
 class HouseholdsSerializer(serializers.ModelSerializer):
+    role = serializers.SerializerMethodField()
+
     class Meta:
         model = Household
         fields = '__all__'
         read_only_fields = ['owner']
+
+    def get_role(self, obj):
+        user = self.context['request'].user
+
+        membership = HouseholdMember.objects.filter(
+            household=obj,
+            user=user
+        ).first()
+
+        return membership.role if membership else None
 
 
 class InvitationSerializer(serializers.ModelSerializer):

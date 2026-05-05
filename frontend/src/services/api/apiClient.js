@@ -43,8 +43,17 @@ export async function apiRequest({
 
   let data = null;
 
-  if (response.headers.get("content-type")?.includes("application/json")) {
-    data = await response.json();
+  try {
+    if (response.status !== 204) {
+      const contentType = response.headers.get("content-type");
+
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      }
+    }
+  } catch {
+    // verhindert crash bei leerem body
+    data = null;
   }
 
   if (!response.ok) {

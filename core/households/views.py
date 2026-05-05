@@ -18,7 +18,8 @@ class HouseholdListCreateView(APIView):
         households = Household.objects.filter(
             householdmember__user=request.user)
 
-        serializer = HouseholdsSerializer(households, many=True)
+        serializer = HouseholdsSerializer(
+            households, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
@@ -32,7 +33,7 @@ class HouseholdListCreateView(APIView):
             HouseholdMember.objects.create(
                 user=request.user, household=household, role='owner')
 
-            return Response(HouseholdsSerializer(household).data, status=status.HTTP_201_CREATED)
+            return Response(HouseholdsSerializer(household, context={'request': request}).data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -242,3 +243,22 @@ class HouseholdUpdateView(APIView):
 
     def put(self, request, pk):
         return self.patch(request, pk)
+
+    def delete(self, request, pk):
+        household = get_object_or_404(Household, pk=pk)
+
+        if not household:
+            return Response(status=204)
+
+        membership = HouseholdMember.objects.filter(
+            household=household,
+            user=request.user
+        ).first()
+
+        # Nur Owner darf löschen
+        if not membership or membership.role != "owner":
+            return Response({"error": "Not allowed"}, status=403)
+
+        household.delete()
+
+        return Response({"message": "Deleted"}, status=204)

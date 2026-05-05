@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import HouseholdSwitcher from "./HouseholdSwitcher";
 import UserMenu from "./UserMenu";
 import { getHouseholds } from "../services/householdService";
+import { createHousehold } from "../services/householdService";
+import { useNavigate } from "react-router-dom";
 
 export default function Layout({
   children,
@@ -13,6 +15,7 @@ export default function Layout({
 }) {
   const location = useLocation();
   const [households, setHouseholds] = useState([]);
+  const navigate = useNavigate();
 
   const path = location.pathname.replace("/", "") || "dashboard";
 
@@ -61,6 +64,33 @@ export default function Layout({
     }
   };
 
+  // =========================
+  // LOAD HOUSEHOLDS
+  // =========================
+
+  const currentHousehold = households.find((h) => h.id === selectedHousehold);
+  const isOwner = currentHousehold?.role === "owner";
+
+  // =========================
+  // CREATE HOUSEHOLD FUNCTION (für HomeProfile)
+  // =========================
+  const handleCreateHousehold = async () => {
+    try {
+      const newHousehold = await createHousehold({
+        name: "New Household",
+      });
+
+      const updated = await getHouseholds();
+      setHouseholds(updated);
+
+      setSelectedHousehold(newHousehold.id);
+
+      navigate("/home");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="container">
       {/* ================= SIDEBAR ================= */}
@@ -93,13 +123,14 @@ export default function Layout({
               households={households} // zentral gesteuert
               selectedHousehold={selectedHousehold}
               setSelectedHousehold={setSelectedHousehold}
+              onCreateHousehold={handleCreateHousehold}
             />
           </div>
         </div>
 
         {/* CONTENT */}
         {typeof children === "function"
-          ? children({ refreshHouseholds })
+          ? children({ refreshHouseholds, isOwner, setSelectedHousehold })
           : children}
       </main>
     </div>

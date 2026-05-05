@@ -1,12 +1,23 @@
 import { useState, useEffect } from "react";
 import { getHomeProfile, saveHomeProfile } from "../services/homeService";
-import { updateHouseholdName } from "../services/householdService";
+import {
+  updateHouseholdName,
+  deleteHousehold,
+  getHouseholds,
+} from "../services/householdService";
+import { useNavigate } from "react-router-dom";
 
-export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
+export default function HomeProfile({
+  selectedHousehold,
+  refreshHouseholds,
+  isOwner,
+  setSelectedHousehold,
+}) {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [preview, setPreview] = useState(null);
   const [originalData, setOriginalData] = useState(null);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     household_name: "",
@@ -65,6 +76,36 @@ export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
 
     fetchProfile();
   }, [selectedHousehold]);
+
+  // =========================
+  // DELETE HOUSEHOLD
+  // =========================
+  const handleDelete = async () => {
+    if (!selectedHousehold) return;
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this households?",
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await deleteHousehold(selectedHousehold);
+    } catch {
+      // ignore (already deleted)
+    }
+
+    const updated = await getHouseholds();
+    await refreshHouseholds();
+
+    if (updated.length > 0) {
+      setSelectedHousehold(updated[0].id);
+    } else {
+      setSelectedHousehold(null);
+    }
+
+    navigate("/dashboard");
+  };
 
   // =========================
   // CHANGE DETECTION
@@ -354,7 +395,19 @@ export default function HomeProfile({ selectedHousehold, refreshHouseholds }) {
           </div>
         )}
       </div>
-      <div className="form-actions">
+      <div
+        className="form-actions"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        {isOwner && (
+          <button className="delete-btn" onClick={handleDelete}>
+            Delete
+          </button>
+        )}
         <button
           className="cancel-btn"
           onClick={handleCancel}
