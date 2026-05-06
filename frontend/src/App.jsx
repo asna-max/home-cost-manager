@@ -7,21 +7,21 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import Login from "./pages/Login";
-import Bills from "./pages/Bills";
-import UploadBill from "./pages/UploadBill";
-import Layout from "./components/Layout";
-import ProtectedRoute from "./components/ProtectedRoute";
-import HomeProfile from "./components/HomeProfile";
+import Login from "./features/auth/Login";
+import Bills from "./features/bills/Bills";
+import UploadBill from "./features/upload/UploadBill";
+import HomeProfile from "./features/home/HomeProfile";
+
+import Layout from "./shared/components/Layout";
+import ProtectedRoute from "./shared/components/ProtectedRoute";
 
 import { getToken, clearToken } from "./services/auth/authStore";
 
 function App() {
   const [token, setToken] = useState(getToken());
-  const [selectedHousehold, setSelectedHousehold] = useState(null);
 
   // =========================
-  // AUTO LOGOUT
+  // AUTO LOGOUT (401)
   // =========================
   useEffect(() => {
     const handleUnauthorized = () => {
@@ -37,7 +37,7 @@ function App() {
   }, []);
 
   // =========================
-  // USER AUS JWT
+  // USER AUS TOKEN
   // =========================
   const user = useMemo(() => {
     if (!token) return null;
@@ -66,7 +66,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* ROOT */}
+        {/* ================= ROOT ================= */}
         <Route
           path="/"
           element={
@@ -78,21 +78,28 @@ function App() {
           }
         />
 
-        {/* LOGIN */}
+        {/* ================= LOGIN ================= */}
         <Route path="/login" element={<Login setToken={setToken} />} />
+
+        {/* ================= HOME ================= */}
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <Layout user={user} handleLogout={handleLogout}>
+                <HomeProfile />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
 
         {/* ================= BILLS ================= */}
         <Route
           path="/bills"
           element={
             <ProtectedRoute>
-              <Layout
-                user={user}
-                handleLogout={handleLogout}
-                selectedHousehold={selectedHousehold}
-                setSelectedHousehold={setSelectedHousehold}
-              >
-                <Bills selectedHousehold={selectedHousehold} />
+              <Layout user={user} handleLogout={handleLogout}>
+                <Bills />
               </Layout>
             </ProtectedRoute>
           }
@@ -103,43 +110,14 @@ function App() {
           path="/upload"
           element={
             <ProtectedRoute>
-              <Layout
-                user={user}
-                handleLogout={handleLogout}
-                selectedHousehold={selectedHousehold}
-                setSelectedHousehold={setSelectedHousehold}
-              >
-                <UploadBill selectedHousehold={selectedHousehold} />
+              <Layout user={user} handleLogout={handleLogout}>
+                <UploadBill />
               </Layout>
             </ProtectedRoute>
           }
         />
 
-        {/* ================= HOME PROFILE ================= */}
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute>
-              <Layout
-                user={user}
-                handleLogout={handleLogout}
-                selectedHousehold={selectedHousehold}
-                setSelectedHousehold={setSelectedHousehold}
-              >
-                {({ refreshHouseholds, isOwner }) => (
-                  <HomeProfile
-                    selectedHousehold={selectedHousehold}
-                    refreshHouseholds={refreshHouseholds}
-                    isOwner={isOwner}
-                    setSelectedHousehold={setSelectedHousehold}
-                  />
-                )}
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* FALLBACK */}
+        {/* ================= FALLBACK ================= */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

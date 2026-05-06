@@ -4,8 +4,12 @@ import "./index.css";
 import App from "./App.jsx";
 import "./styles/app.css";
 
+import HouseholdProvider from "./shared/providers/HouseholdProvider.jsx";
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <App />
+    <HouseholdProvider>
+      <App />
+    </HouseholdProvider>
   </StrictMode>,
 );
