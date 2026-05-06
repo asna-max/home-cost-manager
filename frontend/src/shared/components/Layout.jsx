@@ -13,54 +13,65 @@ export default function Layout({ children, user, handleLogout }) {
     createHousehold,
   } = useHousehold();
 
-  // aktueller Pfad (z.B. "bills")
-  const path = location.pathname.replace("/", "") || "dashboard";
+  const path = location.pathname;
 
-  const titleMap = {
-    dashboard: "Dashboard",
-    home: "Home Profile",
-    bills: "Bills",
-    upload: "Upload Bill",
-    settings: "Settings",
-  };
-
-  const isActive = (route) => path === route;
+  const navItems = [
+    { to: "/home", label: "Home" },
+    { to: "/bills", label: "Bills" },
+    { to: "/upload", label: "Upload" },
+  ];
 
   return (
-    <div className="container">
+    <div className="flex h-screen bg-gray-100">
       {/* ================= SIDEBAR ================= */}
-      <aside className="sidebar">
-        <nav className="sidebar-nav">
-          <SidebarLink
-            to="/dashboard"
-            label="Dashboard"
-            active={isActive("dashboard")}
-          />
-          <SidebarLink
-            to="/home"
-            label="Home Profile"
-            active={isActive("home")}
-          />
-          <SidebarLink to="/bills" label="Bills" active={isActive("bills")} />
-          <SidebarLink
-            to="/upload"
-            label="Upload Bill"
-            active={isActive("upload")}
-          />
-        </nav>
+      <aside className="w-60 bg-white border-r shadow-sm flex flex-col justify-between">
+        <div className="p-5">
+          {/* LOGO / TITLE */}
+          <h2 className="text-xl font-semibold mb-6">HomeCost</h2>
 
-        <button className="logout-btn" onClick={handleLogout}>
-          Logout
-        </button>
+          {/* NAV */}
+          <nav className="flex flex-col gap-2">
+            {navItems.map((item) => {
+              const isActive = path === item.to;
+
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`px-4 py-2 rounded-md text-sm transition
+                    ${
+                      isActive
+                        ? "bg-blue-500 text-white"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* LOGOUT */}
+        <div className="p-5">
+          <button
+            onClick={handleLogout}
+            className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition"
+          >
+            Logout
+          </button>
+        </div>
       </aside>
 
       {/* ================= MAIN ================= */}
-      <main className="main">
+      <div className="flex flex-col flex-1">
         {/* HEADER */}
-        <div className="page-header">
-          <h1 className="page-title">{titleMap[path] || "App"}</h1>
+        <header className="bg-white border-b px-6 py-4 flex justify-between items-center">
+          <h1 className="text-xl font-semibold text-gray-800 capitalize">
+            {path.replace("/", "") || "dashboard"}
+          </h1>
 
-          <div className="header-right">
+          <div className="flex items-center gap-4">
             <UserMenu user={user} handleLogout={handleLogout} />
 
             <HouseholdSwitcher
@@ -70,20 +81,11 @@ export default function Layout({ children, user, handleLogout }) {
               onCreateHousehold={createHousehold}
             />
           </div>
-        </div>
+        </header>
 
         {/* CONTENT */}
-        <div className="page-content">{children}</div>
-      </main>
+        <main className="p-6 overflow-auto flex-1">{children}</main>
+      </div>
     </div>
-  );
-}
-
-/* ================= Sidebar Link Component ================= */
-function SidebarLink({ to, label, active }) {
-  return (
-    <Link to={to} className={active ? "sidebar-link active" : "sidebar-link"}>
-      {label}
-    </Link>
   );
 }
