@@ -24,24 +24,35 @@ export default function UserMenu({ user, handleLogout }) {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
-    <div className="user-menu" ref={ref}>
-      <button className="avatar-btn" onClick={() => setOpen((prev) => !prev)}>
+    <div className="relative" ref={ref}>
+      {/* Avatar */}
+      <button
+        onClick={() => setOpen((prev) => !prev)}
+        className="w-10 h-10 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center hover:bg-blue-600 transition"
+      >
         {getInitials()}
       </button>
 
+      {/* Dropdown */}
       {open && (
-        <div className="user-dropdown">
-          <div className="user-name">{user?.name}</div>
-          <div className="user-email">{user?.email}</div>
+        <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border z-50">
+          <div className="p-4 border-b">
+            <div className="font-semibold text-gray-800">
+              {user?.name || "User"}
+            </div>
+            <div className="text-sm text-gray-500">
+              {user?.email || "no-email"}
+            </div>
+          </div>
 
-          <button className="logout-btn" onClick={handleLogout}>
+          <button
+            onClick={handleLogout}
+            className="w-full text-left px-4 py-3 text-red-500 hover:bg-gray-100 transition"
+          >
             Logout
           </button>
         </div>
