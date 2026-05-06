@@ -8,13 +8,17 @@ export default function Login({ setToken }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault(); 
     setError("");
 
     try {
+      setLoading(true);
+
       const data = await login(username, password);
 
       if (!data?.access) {
@@ -27,12 +31,17 @@ export default function Login({ setToken }) {
       navigate("/bills");
     } catch (err) {
       setError(err.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-sm bg-white p-6 rounded-xl shadow-md">
+      <form
+        onSubmit={handleLogin}
+        className="w-full max-w-sm bg-white p-6 rounded-xl shadow-md"
+      >
         <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">
           Login
         </h2>
@@ -61,14 +70,14 @@ export default function Login({ setToken }) {
           />
 
           <button
-            onClick={handleLogin}
-            disabled={!username || !password}
+            type="submit"
+            disabled={!username || !password || loading}
             className="bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 disabled:bg-gray-300 transition"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
