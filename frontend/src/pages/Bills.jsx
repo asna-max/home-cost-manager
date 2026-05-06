@@ -136,12 +136,12 @@ export default function Bills({ selectedHousehold }) {
         <table className="table">
           <thead>
             <tr>
-              <th>Title</th>
               <th>Type</th>
               <th>From</th>
               <th>To</th>
               <th>Due</th>
               <th>Amount</th>
+              <th>Notes</th>
               <th>View</th>
               <th>Status</th>
               <th>Delete</th>
@@ -151,12 +151,12 @@ export default function Bills({ selectedHousehold }) {
           <tbody>
             {filteredBills.map((bill) => (
               <tr key={bill.id}>
-                <td>{bill.title}</td>
                 <td>{bill.bill_type}</td>
                 <td>{bill.period_from}</td>
                 <td>{bill.period_to}</td>
                 <td>{bill.due_date}</td>
                 <td>{bill.amount}</td>
+                <td>{bill.notes}</td>
 
                 {/* VIEW */}
                 <td>
@@ -175,7 +175,11 @@ export default function Bills({ selectedHousehold }) {
 
                 {/* STATUS */}
                 <td>
-                  <button onClick={() => handleToggleStatus(bill)}>
+                  <button
+                    className={` status-btn ${bill.is_paid ? "status-paid" : "status-unpaid"}`}
+                    onClick={() => handleToggleStatus(bill)}
+                    title={bill.is_paid ? "Paid" : "Unpaid"}
+                  >
                     {bill.is_paid ? <FaCheck /> : <FaTimes />}
                   </button>
                 </td>

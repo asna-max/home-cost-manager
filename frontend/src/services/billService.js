@@ -10,12 +10,12 @@ export async function getBills(householdId) {
       endpoint: `${ENDPOINTS.BILLS.LIST}?household=${householdId}`,
     });
 
-    // 🔥 handle DRF pagination oder plain array
+    // handle DRF pagination oder plain array
     return Array.isArray(data)
       ? data
       : Array.isArray(data?.results)
-      ? data.results
-      : [];
+        ? data.results
+        : [];
   } catch (err) {
     console.error("Failed to fetch bills:", err);
     return [];
@@ -56,7 +56,7 @@ export function createBill(data, file, householdId) {
 // =========================
 export function updateBill(id, data) {
   return apiRequest({
-    endpoint: ENDPOINTS.BILLS.DETAIL(id), 
+    endpoint: ENDPOINTS.BILLS.DETAIL(id),
     method: "PATCH",
     body: data,
   });
@@ -67,7 +67,7 @@ export function updateBill(id, data) {
 // =========================
 export function deleteBill(id) {
   return apiRequest({
-    endpoint: ENDPOINTS.BILLS.DETAIL(id), 
+    endpoint: ENDPOINTS.BILLS.DETAIL(id),
     method: "DELETE",
   });
 }
@@ -84,6 +84,6 @@ export function extractBill(file, billType) {
     endpoint: ENDPOINTS.BILLS.EXTRACT,
     method: "POST",
     body: formData,
-    isFormData: true, // 🔥 KEIN Content-Type setzen
+    isFormData: true, // KEIN Content-Type setzen
   });
 }

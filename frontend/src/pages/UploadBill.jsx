@@ -47,14 +47,15 @@ export default function UploadBill({ selectedHousehold }) {
 
     try {
       const data = await extractBill(selectedFile, billType);
+      const parsed = data && data.parsed ? data.parsed : {};
 
       setFormData({
         bill_type: billType,
-        amount: data?.parsed?.amount || "",
-        due_date: data?.parsed?.due_date || "",
-        consumption: data?.parsed?.consumption || "",
-        period_from: data?.parsed?.period_from || "",
-        period_to: data?.parsed?.period_to || "",
+        amount: parsed.amount ?? "",
+        due_date: parsed.due_date ?? "",
+        consumption: parsed.consumption_kwh || parsed.consumption_m3,
+        period_from: parsed.period_from ?? "",
+        period_to: parsed.period_to ?? "",
         is_paid: false,
         notes: "",
       });
