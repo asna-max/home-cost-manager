@@ -22,12 +22,18 @@ export default function HomeProfile() {
     navigate,
   );
 
-  // ❗ FIX: warten bis Household geladen ist
-  if (!selectedHousehold) return <div>Select household</div>;
-  if (state.loading) return <div>Loading...</div>;
+  if (!selectedHousehold)
+    return (
+      <div className="text-center mt-10 text-gray-500">Select household</div>
+    );
+
+  if (state.loading)
+    return <div className="text-center mt-10 text-gray-500">Loading...</div>;
 
   return (
-    <div>
+    <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow">
+      <h2 className="text-xl font-semibold mb-6 text-gray-800">Home Profile</h2>
+
       <HomeForm {...state} />
       <HomeActions {...state} isOwner={isOwner} />
     </div>
