@@ -32,12 +32,22 @@ export default function SummaryCards({ summary }) {
       {cards.map((card) => (
         <div
           key={card.title}
-          className={`${card.color} text-white rounded-xl shadow p-5`}
+          className={`
+            ${card.color}
+            text-white
+            rounded-xl
+            shadow
+            p-5
+            transition-transform
+            hover:scale-[1.02]
+          `}
         >
+          {/* TITLE */}
           <p className="text-sm opacity-90">{card.title}</p>
 
+          {/* VALUE */}
           <h3 className="text-2xl font-semibold mt-2">
-            CHF {card.value.toFixed(2)}
+            CHF {Number(card.value || 0).toFixed(2)}
           </h3>
         </div>
       ))}

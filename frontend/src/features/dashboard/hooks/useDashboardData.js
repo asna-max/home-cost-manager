@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
+
 import { getBills } from "../../../services/billService";
+
+import { buildSummary, buildMonthlyData } from "../utils/dashboardUtils";
 
 export function useDashboardData(selectedHousehold) {
   const [loading, setLoading] = useState(false);
+
+  const [summary, setSummary] = useState(null);
+
+  const [monthlyData, setMonthlyData] = useState([]);
 
   const [bills, setBills] = useState([]);
 
@@ -13,21 +20,30 @@ export function useDashboardData(selectedHousehold) {
       setLoading(true);
 
       try {
-        const result = await getBills(selectedHousehold);
+        const bills = await getBills(selectedHousehold);
 
-        setBills(Array.isArray(result) ? result : []);
-        console.log("Dashboard bills:", result);
+        // RAW DATA
+        setBills(bills);
+
+        // SUMMARY
+        setSummary(buildSummary(bills));
+
+        // MONTHLY CHART
+        setMonthlyData(buildMonthlyData(bills));
       } catch (err) {
-        console.error("Dashboard loading faild", err);
+        console.error("Dashboard loading failed", err);
       } finally {
         setLoading(false);
       }
     };
+
     fetchDashboard();
   }, [selectedHousehold]);
 
   return {
     loading,
     bills,
+    summary,
+    monthlyData,
   };
 }

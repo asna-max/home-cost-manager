@@ -11,6 +11,7 @@ import Login from "./features/auth/Login";
 import Bills from "./features/bills/Bills";
 import UploadBill from "./features/upload/UploadBill";
 import HomeProfile from "./features/home/HomeProfile";
+import Dashboard from "./features/dashboard/Dashboard";
 
 import Layout from "./shared/components/Layout";
 import ProtectedRoute from "./shared/components/ProtectedRoute";
@@ -80,6 +81,18 @@ function App() {
 
         {/* ================= LOGIN ================= */}
         <Route path="/login" element={<Login setToken={setToken} />} />
+
+        {/* ================= Dashboard ================= */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Layout user={user} handleLogout={handleLogout}>
+                <Dashboard />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
 
         {/* ================= HOME ================= */}
         <Route

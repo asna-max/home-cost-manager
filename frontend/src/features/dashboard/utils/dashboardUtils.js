@@ -41,3 +41,47 @@ export function buildSummary(bills) {
     other: sumByType(bills, "other"),
   };
 }
+
+export function buildMonthlyData(bills) {
+  const months = {};
+
+  bills.forEach((bill) => {
+    if (!bill.period_from) return;
+
+    const date = new Date(bill.period_from);
+
+    const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+
+    // CREATE MONTH
+    if (!months[monthKey]) {
+      months[monthKey] = {
+        month: date.toLocaleString("default", {
+          month: "short",
+        }),
+
+        year: date.getFullYear(),
+
+        monthIndex: date.getMonth(),
+
+        electricity: 0,
+        water: 0,
+        heating: 0,
+        other: 0,
+      };
+    }
+
+    const type = normalizeType(bill.type);
+
+    months[monthKey][type] += Number(bill.total_amount || 0);
+  });
+
+  return Object.values(months).sort((a, b) => {
+    // YEAR
+    if (a.year !== b.year) {
+      return a.year - b.year;
+    }
+
+    // MONTH
+    return a.monthIndex - b.monthIndex;
+  });
+}

@@ -16,6 +16,7 @@ export default function Layout({ children, user, handleLogout }) {
   const path = location.pathname;
 
   const navItems = [
+    { to: "/dashboard", label: "Dashboard" },
     { to: "/home", label: "Home" },
     { to: "/bills", label: "Bills" },
     { to: "/upload", label: "Upload" },
