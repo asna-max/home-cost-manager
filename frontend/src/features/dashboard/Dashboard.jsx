@@ -1,5 +1,7 @@
 import { useHousehold } from "../../shared/hooks/useHousehold";
 import { useDashboardData } from "./hooks/useDashboardData";
+import SummaryCards from "./components/SummaryCards";
+import { buildSummary } from "./utils/dashboardUtils";
 
 export default function Dashboard() {
   const { selectedHousehold } = useHousehold();
@@ -18,12 +20,11 @@ export default function Dashboard() {
     );
   }
 
+  const summary = buildSummary(bills);
+
   return (
-    <div className="spacy-y-6">
-      <div className="bg-white rounded-xl shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-800">Dashboard</h2>
-        <p className="text-gray-500 mt-2">Bill loaded: {bills.length}</p>
-      </div>
+    <div className="space-y-6">
+      {summary && <SummaryCards summary={summary} />}
     </div>
   );
 }
