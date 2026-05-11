@@ -5,6 +5,7 @@ import {
 } from "../../services/householdService";
 import { HouseholdContext } from "../context/HouseholdContext";
 
+
 export default function HouseholdProvider({ children }) {
   const [households, setHouseholds] = useState([]);
   const [selectedHousehold, setSelectedHousehold] = useState(null);
