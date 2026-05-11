@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 function formatDate(date) {
   if (!date) return "";
 
@@ -11,13 +13,18 @@ function formatType(type) {
 }
 
 export default function RecentBills({ bills }) {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-white rounded-xl shadow p-5">
       {/* TITLE */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-800">Recent Bills</h2>
 
-        <button className="text-sm text-blue-500 hover:underline">
+        <button
+          onClick={() => navigate("/bills")}
+          className="text-sm text-blue-500 hover:underline"
+        >
           View all
         </button>
       </div>
