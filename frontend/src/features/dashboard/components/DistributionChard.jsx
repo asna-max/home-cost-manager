@@ -1,6 +1,6 @@
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
 
-export default function DistributionChart({ data }) {
+export default function DistributionChart({ data, stats }) {
   const total = data.reduce((sum, item) => sum + item.value, 0);
   return (
     <div className="bg-white rounded-xl shadow p-5">
@@ -28,7 +28,7 @@ export default function DistributionChart({ data }) {
                       dataKey="value"
                       nameKey="name"
                       innerRadius={60}
-                      outerRadius={100}
+                      outerRadius={110}
                       paddingAngle={3}
                     >
                       {data.map((item) => (
@@ -76,11 +76,36 @@ export default function DistributionChart({ data }) {
 
             {/* STATS PLACEHOLDER */}
             <div className="space-y-3 text-sm text-gray-600">
-              <p>Most expensive utility: —</p>
+              <div className="space-y-4">
+                {/* MOST EXPENSIVE */}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">
+                    Most expensive utility
+                  </span>
 
-              <p>Highest month: —</p>
+                  <span className="font-medium text-gray-800">
+                    {stats?.mostExpensive?.name}
+                  </span>
+                </div>
 
-              <p>Lowest month: —</p>
+                {/* HIGHEST MONTH */}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-500">Highest month</span>
+
+                  <span className="font-medium text-gray-800">
+                    {stats?.highestMonth?.month} {stats?.highestMonth?.year}
+                  </span>
+                </div>
+
+                {/* LOWEST MONTH */}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-500">Lowest month</span>
+
+                  <span className="font-medium text-gray-800">
+                    {stats?.lowestMonth?.month} {stats?.lowestMonth?.year}
+                  </span>
+                </div>
+              </div>
             </div>
           </>
         </>

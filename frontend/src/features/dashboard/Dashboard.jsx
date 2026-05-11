@@ -9,8 +9,13 @@ import DistributionChart from "./components/DistributionChard";
 export default function Dashboard() {
   const { selectedHousehold } = useHousehold();
 
-  const { loading, summary, monthlyData, distributionData } =
-    useDashboardData(selectedHousehold);
+  const {
+    loading,
+    summary,
+    monthlyData,
+    distributionData,
+    distributionStates,
+  } = useDashboardData(selectedHousehold);
 
   // =========================
   // NO HOUSEHOLD
@@ -45,7 +50,7 @@ export default function Dashboard() {
 
       {/* MONTHLY CHART */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <DistributionChart data={distributionData} />
+        <DistributionChart data={distributionData} stats={distributionStates} />
       </div>
     </div>
   );

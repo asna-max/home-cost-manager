@@ -110,3 +110,36 @@ export function buildDistributionData(bills) {
     },
   ].filter((item) => item.value > 0);
 }
+
+export function buildDistributionStats(distributionData, monthlyData) {
+  // MOST EXPENSIVE UTILITY
+  const mostExpensive = distributionData.reduce(
+    (max, item) => (item.value > max.value ? item : max),
+    distributionData[0],
+  );
+
+  // MONTH TOTALS
+  const monthTotals = monthlyData.map((month) => ({
+    ...month,
+
+    total: month.electricity + month.water + month.heating + month.other,
+  }));
+
+  // HIGHEST MONTH
+  const highestMonth = monthTotals.reduce(
+    (max, month) => (month.total > max.total ? month : max),
+    monthTotals[0],
+  );
+
+  // LOWEST MONTH
+  const lowestMonth = monthTotals.reduce(
+    (min, month) => (month.total < min.total ? month : min),
+    monthTotals[0],
+  );
+
+  return {
+    mostExpensive,
+    highestMonth,
+    lowestMonth,
+  };
+}
