@@ -85,3 +85,28 @@ export function buildMonthlyData(bills) {
     return a.monthIndex - b.monthIndex;
   });
 }
+
+export function buildDistributionData(bills) {
+  return [
+    {
+      name: "Electricity",
+      value: sumByType(bills, "electricity"),
+      color: "#FACC15",
+    },
+    {
+      name: "Water",
+      value: sumByType(bills, "water"),
+      color: "#06B6D4",
+    },
+    {
+      name: "Heating",
+      value: sumByType(bills, "heating"),
+      color: "#EF4444",
+    },
+    {
+      name: "Other",
+      value: sumByType(bills, "other"),
+      color: "#FB923C",
+    },
+  ].filter((item) => item.value > 0);
+}

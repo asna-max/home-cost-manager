@@ -4,11 +4,13 @@ import { useDashboardData } from "./hooks/useDashboardData";
 
 import SummaryCards from "./components/SummaryCards";
 import MonthlyChart from "./components/MonthlyChart";
+import DistributionChart from "./components/DistributionChard";
 
 export default function Dashboard() {
   const { selectedHousehold } = useHousehold();
 
-  const { loading, summary, monthlyData } = useDashboardData(selectedHousehold);
+  const { loading, summary, monthlyData, distributionData } =
+    useDashboardData(selectedHousehold);
 
   // =========================
   // NO HOUSEHOLD
@@ -40,6 +42,11 @@ export default function Dashboard() {
 
       {/* MONTHLY CHART */}
       <MonthlyChart data={monthlyData} />
+
+      {/* MONTHLY CHART */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <DistributionChart data={distributionData} />
+      </div>
     </div>
   );
 }
