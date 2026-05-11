@@ -4,7 +4,7 @@ import {
   createHousehold,
 } from "../../services/householdService";
 import { HouseholdContext } from "../context/HouseholdContext";
-
+import { getToken } from "../../services/auth/authStore";
 
 export default function HouseholdProvider({ children }) {
   const [households, setHouseholds] = useState([]);
@@ -31,6 +31,10 @@ export default function HouseholdProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    const token = getToken();
+
+    if (!token) return;
+
     loadHouseholds();
   }, [loadHouseholds]);
 
