@@ -1,6 +1,7 @@
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
 
 export default function DistributionChart({ data }) {
+  const total = data.reduce((sum, item) => sum + item.value, 0);
   return (
     <div className="bg-white rounded-xl shadow p-5">
       {/* TITLE */}
@@ -63,7 +64,7 @@ export default function DistributionChart({ data }) {
 
                     {/* VALUE */}
                     <span className="text-lg font-semibold text-gray-800">
-                      CHF {Number(item.value).toFixed(2)}
+                      {Math.round((item.value / total) * 100)} %
                     </span>
                   </div>
                 ))}
