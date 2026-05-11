@@ -17,7 +17,7 @@ export function useDashboardData(selectedHousehold) {
 
   const [monthlyData, setMonthlyData] = useState([]);
   const [distributionData, setDistributionData] = useState([]);
-  const [distributionStates, setDistributionStates] = useState(null);
+  const [distributionStats, setDistributionStats] = useState(null);
   const [recentBills, setRecentBills] = useState([]);
 
   const [bills, setBills] = useState([]);
@@ -45,7 +45,7 @@ export function useDashboardData(selectedHousehold) {
         const distribution = buildDistributionData(bills);
         setDistributionData(distribution);
 
-        setDistributionStates(buildDistributionStats(distribution, monthly));
+        setDistributionStats(buildDistributionStats(distribution, monthly));
 
         setRecentBills(getRecentBills(bills));
       } catch (err) {
@@ -64,7 +64,7 @@ export function useDashboardData(selectedHousehold) {
     summary,
     monthlyData,
     distributionData,
-    distributionStates,
+    distributionStats,
     recentBills,
   };
 }
