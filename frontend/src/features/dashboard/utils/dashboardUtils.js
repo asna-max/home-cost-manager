@@ -1,22 +1,3 @@
-function normalizeType(type) {
-  if (!type) return "other";
-
-  const value = type.toLowerCase();
-
-  if (value.includes("electric")) {
-    return "electricity";
-  }
-
-  if (value.includes("water")) {
-    return "water";
-  }
-
-  if (value.includes("heat")) {
-    return "heating";
-  }
-
-  return "other";
-}
 
 function sumBills(bills) {
   return bills.reduce((sum, bill) => sum + Number(bill.amount || 0), 0);
@@ -24,7 +5,7 @@ function sumBills(bills) {
 
 function sumByType(bills, targetType) {
   return bills
-    .filter((bill) => normalizeType(bill.bill_type) === targetType)
+    .filter((bill) => bill.bill_type === targetType)
     .reduce((sum, bill) => sum + Number(bill.amount || 0), 0);
 }
 
@@ -70,7 +51,7 @@ export function buildMonthlyData(bills) {
       };
     }
 
-    const type = normalizeType(bill.bill_type);
+    const type = bill.bill_type;
 
     months[monthKey][type] += Number(bill.amount || 0);
   });
@@ -142,4 +123,10 @@ export function buildDistributionStats(distributionData, monthlyData) {
     highestMonth,
     lowestMonth,
   };
+}
+
+export function getRecentBills(bills, limit = 5) {
+  return [...bills]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, limit);
 }

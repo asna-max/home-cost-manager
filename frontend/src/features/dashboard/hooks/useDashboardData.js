@@ -7,6 +7,7 @@ import {
   buildMonthlyData,
   buildDistributionData,
   buildDistributionStats,
+  getRecentBills,
 } from "../utils/dashboardUtils";
 
 export function useDashboardData(selectedHousehold) {
@@ -17,6 +18,7 @@ export function useDashboardData(selectedHousehold) {
   const [monthlyData, setMonthlyData] = useState([]);
   const [distributionData, setDistributionData] = useState([]);
   const [distributionStates, setDistributionStates] = useState(null);
+  const [recentBills, setRecentBills] = useState([]);
 
   const [bills, setBills] = useState([]);
 
@@ -44,6 +46,8 @@ export function useDashboardData(selectedHousehold) {
         setDistributionData(distribution);
 
         setDistributionStates(buildDistributionStats(distribution, monthly));
+
+        setRecentBills(getRecentBills(bills));
       } catch (err) {
         console.error("Dashboard loading failed", err);
       } finally {
@@ -61,5 +65,6 @@ export function useDashboardData(selectedHousehold) {
     monthlyData,
     distributionData,
     distributionStates,
+    recentBills,
   };
 }
