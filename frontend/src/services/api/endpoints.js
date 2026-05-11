@@ -1,6 +1,7 @@
 export const ENDPOINTS = {
   AUTH: {
     LOGIN: "token/",
+    REGISTER: "/auth/register/",
   },
 
   BILLS: {

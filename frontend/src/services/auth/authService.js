@@ -8,3 +8,11 @@ export function login(username, password) {
     body: { username, password },
   });
 }
+
+export async function register(data) {
+  return apiRequest({
+    endpoint: ENDPOINTS.AUTH.REGISTER,
+    method: "POST",
+    body: data,
+  });
+}

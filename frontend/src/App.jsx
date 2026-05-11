@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 
 import Login from "./features/auth/Login";
+import Register from "./features/auth/Register";
 import Bills from "./features/bills/Bills";
 import UploadBill from "./features/upload/UploadBill";
 import HomeProfile from "./features/home/HomeProfile";
@@ -72,7 +73,7 @@ function App() {
           path="/"
           element={
             token ? (
-              <Navigate to="/home" replace />
+              <Navigate to="/login" replace />
             ) : (
               <Navigate to="/login" replace />
             )
@@ -81,6 +82,9 @@ function App() {
 
         {/* ================= LOGIN ================= */}
         <Route path="/login" element={<Login setToken={setToken} />} />
+
+        {/* ================= REGISTER ================= */}
+        <Route path="/register" element={<Register />} />
 
         {/* ================= Dashboard ================= */}
         <Route
