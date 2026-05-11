@@ -75,7 +75,7 @@ export default function MonthlyChart({ data }) {
               <Line
                 type="monotone"
                 dataKey="other"
-                stroke="#10B981"
+                stroke="#FB923C"
                 strokeWidth={3}
                 dot={{ r: 4 }}
                 activeDot={{ r: 6 }}

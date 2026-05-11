@@ -19,13 +19,13 @@ function normalizeType(type) {
 }
 
 function sumBills(bills) {
-  return bills.reduce((sum, bill) => sum + Number(bill.total_amount || 0), 0);
+  return bills.reduce((sum, bill) => sum + Number(bill.amount || 0), 0);
 }
 
 function sumByType(bills, targetType) {
   return bills
-    .filter((bill) => normalizeType(bill.type) === targetType)
-    .reduce((sum, bill) => sum + Number(bill.total_amount || 0), 0);
+    .filter((bill) => normalizeType(bill.bill_type) === targetType)
+    .reduce((sum, bill) => sum + Number(bill.amount || 0), 0);
 }
 
 export function buildSummary(bills) {
@@ -70,9 +70,9 @@ export function buildMonthlyData(bills) {
       };
     }
 
-    const type = normalizeType(bill.type);
+    const type = normalizeType(bill.bill_type);
 
-    months[monthKey][type] += Number(bill.total_amount || 0);
+    months[monthKey][type] += Number(bill.amount || 0);
   });
 
   return Object.values(months).sort((a, b) => {
