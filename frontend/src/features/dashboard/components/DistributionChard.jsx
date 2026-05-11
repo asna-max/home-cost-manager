@@ -15,59 +15,75 @@ export default function DistributionChart({ data }) {
         </div>
       ) : (
         <>
-          {/* CHART */}
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={data}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={3}
-                >
-                  {data.map((item) => (
-                    <Cell key={item.name} fill={item.color} />
-                  ))}
-                </Pie>
+          <>
+            {/* TOP */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+              {/* CHART */}
+              <div className="h-72 flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={data}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={3}
+                    >
+                      {data.map((item) => (
+                        <Cell key={item.name} fill={item.color} />
+                      ))}
+                    </Pie>
 
-                <Tooltip
-                  formatter={(value) => `CHF ${Number(value).toFixed(2)}`}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* LEGEND */}
-          <div className="space-y-3 mt-4">
-            {data.map((item) => (
-              <div
-                key={item.name}
-                className="flex items-center justify-between"
-              >
-                {/* LEFT */}
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{
-                      backgroundColor: item.color,
-                    }}
-                  />
-
-                  <span className="text-sm text-gray-700">{item.name}</span>
-                </div>
-
-                {/* VALUE */}
-                <span className="text-sm font-medium text-gray-800">
-                  CHF {Number(item.value).toFixed(2)}
-                </span>
+                    <Tooltip
+                      formatter={(value) => `CHF ${Number(value).toFixed(2)}`}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
-            ))}
-          </div>
+
+              {/* LEGEND */}
+              <div className="space-y-5">
+                {data.map((item) => (
+                  <div
+                    key={item.name}
+                    className="flex items-center justify-between"
+                  >
+                    {/* LEFT */}
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-4 h-4 rounded-full"
+                        style={{
+                          backgroundColor: item.color,
+                        }}
+                      />
+
+                      <span className="text-lg text-gray-700">{item.name}</span>
+                    </div>
+
+                    {/* VALUE */}
+                    <span className="text-lg font-semibold text-gray-800">
+                      CHF {Number(item.value).toFixed(2)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* DIVIDER */}
+            <div className="border-t my-6" />
+
+            {/* STATS PLACEHOLDER */}
+            <div className="space-y-3 text-sm text-gray-600">
+              <p>Most expensive utility: —</p>
+
+              <p>Highest month: —</p>
+
+              <p>Lowest month: —</p>
+            </div>
+          </>
         </>
       )}
     </div>
   );
 }
-
