@@ -1,16 +1,20 @@
-import { apiRequest } from "./api/apiClient";
+import api from "./api/axios";
+
 import { ENDPOINTS } from "./api/endpoints";
 
 // =========================
 // GET BILLS
 // =========================
+
 export async function getBills(householdId) {
   try {
-    const data = await apiRequest({
-      endpoint: `${ENDPOINTS.BILLS.LIST}?household=${householdId}`,
-    });
+    const response = await api.get(
+      `${ENDPOINTS.BILLS.LIST}?household=${householdId}`,
+    );
 
-    // handle DRF pagination oder plain array
+    const data = response.data;
+
+    // DRF pagination OR array
     return Array.isArray(data)
       ? data
       : Array.isArray(data?.results)
@@ -18,6 +22,7 @@ export async function getBills(householdId) {
         : [];
   } catch (err) {
     console.error("Failed to fetch bills:", err);
+
     return [];
   }
 }
@@ -25,65 +30,60 @@ export async function getBills(householdId) {
 // =========================
 // CREATE BILL
 // =========================
-export function createBill(data, file, householdId) {
+
+export async function createBill(data, file, householdId) {
   const formData = new FormData();
 
-  // normale Felder
+  // NORMAL FIELDS
   Object.entries(data).forEach(([key, value]) => {
     if (value !== null && value !== undefined) {
       formData.append(key, value);
     }
   });
 
-  // Datei
+  // FILE
   if (file) {
     formData.append("file", file);
   }
 
-  // Haushalt
+  // HOUSEHOLD
   formData.append("household", householdId);
 
-  return apiRequest({
-    endpoint: ENDPOINTS.BILLS.LIST,
-    method: "POST",
-    body: formData,
-    isFormData: true,
-  });
+  const response = await api.post(ENDPOINTS.BILLS.LIST, formData);
+
+  return response.data;
 }
 
 // =========================
-// UPDATE BILL (PATCH)
+// UPDATE BILL
 // =========================
-export function updateBill(id, data) {
-  return apiRequest({
-    endpoint: ENDPOINTS.BILLS.DETAIL(id),
-    method: "PATCH",
-    body: data,
-  });
+
+export async function updateBill(id, data) {
+  const response = await api.patch(ENDPOINTS.BILLS.DETAIL(id), data);
+
+  return response.data;
 }
 
 // =========================
 // DELETE BILL
 // =========================
-export function deleteBill(id) {
-  return apiRequest({
-    endpoint: ENDPOINTS.BILLS.DETAIL(id),
-    method: "DELETE",
-  });
+
+export async function deleteBill(id) {
+  await api.delete(ENDPOINTS.BILLS.DETAIL(id));
 }
 
 // =========================
 // OCR EXTRACT
 // =========================
-export function extractBill(file, billType) {
+
+export async function extractBill(file, billType) {
   const formData = new FormData();
+
   formData.append("file", file);
+
   formData.append("bill_type", billType);
 
-  return apiRequest({
-    endpoint: ENDPOINTS.BILLS.EXTRACT,
-    method: "POST",
-    body: formData,
-    isFormData: true, // KEIN Content-Type setzen
-  });
+  const response = await api.post(ENDPOINTS.BILLS.EXTRACT, formData);
+
+  return response.data;
 }
