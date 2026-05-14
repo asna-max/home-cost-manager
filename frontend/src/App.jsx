@@ -1,5 +1,3 @@
-import { useState, useEffect, useMemo } from "react";
-import { jwtDecode } from "jwt-decode";
 import {
   BrowserRouter as Router,
   Routes,
@@ -13,67 +11,24 @@ import Bills from "./features/bills/Bills";
 import UploadBill from "./features/upload/UploadBill";
 import HomeProfile from "./features/home/HomeProfile";
 import Dashboard from "./features/dashboard/Dashboard";
-
 import Layout from "./shared/components/Layout";
 import ProtectedRoute from "./shared/components/ProtectedRoute";
 
-import { getToken, clearToken } from "./services/auth/authStore";
+import { useAuth } from "./shared/hooks/useAuth";
 
 function App() {
-  const [token, setToken] = useState(getToken());
-
-  // =========================
-  // AUTO LOGOUT (401)
-  // =========================
-  useEffect(() => {
-    const handleUnauthorized = () => {
-      clearToken();
-      setToken(null);
-    };
-
-    window.addEventListener("unauthorized", handleUnauthorized);
-
-    return () => {
-      window.removeEventListener("unauthorized", handleUnauthorized);
-    };
-  }, []);
-
-  // =========================
-  // USER AUS TOKEN
-  // =========================
-  const user = useMemo(() => {
-    if (!token) return null;
-
-    try {
-      const decoded = jwtDecode(token);
-
-      return {
-        name: decoded.username || "User",
-        email: decoded.email || "no-email",
-      };
-    } catch (e) {
-      console.error("Invalid token:", e);
-      return null;
-    }
-  }, [token]);
-
-  // =========================
-  // LOGOUT
-  // =========================
-  const handleLogout = () => {
-    clearToken();
-    setToken(null);
-  };
+  const { token, user, login, logout } = useAuth();
 
   return (
     <Router>
       <Routes>
         {/* ================= ROOT ================= */}
+
         <Route
           path="/"
           element={
             token ? (
-              <Navigate to="/login" replace />
+              <Navigate to="/dashboard" replace />
             ) : (
               <Navigate to="/login" replace />
             )
@@ -81,17 +36,20 @@ function App() {
         />
 
         {/* ================= LOGIN ================= */}
-        <Route path="/login" element={<Login setToken={setToken} />} />
+
+        <Route path="/login" element={<Login login={login} />} />
 
         {/* ================= REGISTER ================= */}
+
         <Route path="/register" element={<Register />} />
 
-        {/* ================= Dashboard ================= */}
+        {/* ================= DASHBOARD ================= */}
+
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Layout user={user} handleLogout={handleLogout}>
+              <Layout user={user} handleLogout={logout}>
                 <Dashboard />
               </Layout>
             </ProtectedRoute>
@@ -99,11 +57,12 @@ function App() {
         />
 
         {/* ================= HOME ================= */}
+
         <Route
           path="/home"
           element={
             <ProtectedRoute>
-              <Layout user={user} handleLogout={handleLogout}>
+              <Layout user={user} handleLogout={logout}>
                 <HomeProfile />
               </Layout>
             </ProtectedRoute>
@@ -111,11 +70,12 @@ function App() {
         />
 
         {/* ================= BILLS ================= */}
+
         <Route
           path="/bills"
           element={
             <ProtectedRoute>
-              <Layout user={user} handleLogout={handleLogout}>
+              <Layout user={user} handleLogout={logout}>
                 <Bills />
               </Layout>
             </ProtectedRoute>
@@ -123,11 +83,12 @@ function App() {
         />
 
         {/* ================= UPLOAD ================= */}
+
         <Route
           path="/upload"
           element={
             <ProtectedRoute>
-              <Layout user={user} handleLogout={handleLogout}>
+              <Layout user={user} handleLogout={logout}>
                 <UploadBill />
               </Layout>
             </ProtectedRoute>
@@ -135,6 +96,7 @@ function App() {
         />
 
         {/* ================= FALLBACK ================= */}
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

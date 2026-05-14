@@ -1,16 +1,12 @@
 import { useState } from "react";
-
 import { useNavigate, Link } from "react-router-dom";
-
-import { login } from "../../services/auth/authService";
-
-import { setToken as saveToken } from "../../services/auth/authStore";
+import { login as loginUser } from "../../services/auth/authService";
 
 import AuthLayout from "./components/AuthLayout";
 import AuthHero from "./components/AuthHero";
 import AuthInput from "./components/AuthInput";
 
-export default function Login({ setToken }) {
+export default function Login({ login }) {
   const [username, setUsername] = useState("");
 
   const [password, setPassword] = useState("");
@@ -33,15 +29,14 @@ export default function Login({ setToken }) {
     try {
       setLoading(true);
 
-      const data = await login(username, password);
+      const data = await loginUser(username, password);
 
       if (!data?.access) {
         throw new Error("Invalid username or password");
       }
 
-      saveToken(data.access);
-
-      setToken(data.access);
+      // AUTH PROVIDER LOGIN
+      login(data.access);
 
       navigate("/dashboard");
     } catch (err) {
@@ -68,20 +63,39 @@ export default function Login({ setToken }) {
         "
       >
         {/* HEADER */}
+
         <div className="space-y-2">
-          <h2 className="text-3xl font-bold text-gray-900">Login</h2>
+          <h2
+            className="
+              text-3xl
+              font-bold
+              text-gray-900
+            "
+          >
+            Login
+          </h2>
 
           <p className="text-gray-500">Welcome back to HomeCost</p>
         </div>
 
         {/* ERROR */}
+
         {error && (
-          <div className="bg-red-100 text-red-600 text-sm p-3 rounded-xl">
+          <div
+            className="
+              bg-red-100
+              text-red-600
+              text-sm
+              p-3
+              rounded-xl
+            "
+          >
             {error}
           </div>
         )}
 
         {/* USERNAME */}
+
         <AuthInput
           label="Username"
           value={username}
@@ -90,6 +104,7 @@ export default function Login({ setToken }) {
         />
 
         {/* PASSWORD */}
+
         <AuthInput
           label="Password"
           type="password"
@@ -99,6 +114,7 @@ export default function Login({ setToken }) {
         />
 
         {/* SUBMIT */}
+
         <button
           type="submit"
           disabled={!username || !password || loading}
@@ -118,9 +134,22 @@ export default function Login({ setToken }) {
         </button>
 
         {/* REGISTER */}
-        <p className="text-sm text-center text-gray-500">
+
+        <p
+          className="
+            text-sm
+            text-center
+            text-gray-500
+          "
+        >
           Don't have an account?{" "}
-          <Link to="/register" className="text-blue-500 hover:underline">
+          <Link
+            to="/register"
+            className="
+              text-blue-500
+              hover:underline
+            "
+          >
             Register
           </Link>
         </p>
