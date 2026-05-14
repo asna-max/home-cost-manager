@@ -1,4 +1,4 @@
-import { API_BASE } from "../../../services/api/apiClient";
+import { API_BASE } from "../../../services/api/axios";
 import { FaEye, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
 
 export default function BillRow({ bill, onDelete, onToggle }) {

@@ -1,8 +1,8 @@
 import { Navigate } from "react-router-dom";
-import { getToken } from "../../services/auth/authStore";
+import { getAccessToken } from "../../services/auth/authStore";
 
 export default function ProtectedRoute({ children }) {
-  const token = getToken();
+  const token = getAccessToken();
 
   if (!token) {
     return <Navigate to="/login" replace />;

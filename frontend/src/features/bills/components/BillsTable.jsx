@@ -1,5 +1,5 @@
 import { FaEye, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
-import { API_BASE } from "../../../services/api/apiClient";
+import { API_BASE } from "../../../services/api/axios";
 
 export default function BillsTable({ bills, onDelete, onToggle }) {
   if (!bills.length) {

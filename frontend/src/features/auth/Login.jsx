@@ -36,7 +36,7 @@ export default function Login({ login }) {
       }
 
       // AUTH PROVIDER LOGIN
-      login(data.access);
+      login(data.access, data.refresh);
 
       navigate("/dashboard");
     } catch (err) {

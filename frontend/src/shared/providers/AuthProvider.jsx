@@ -3,22 +3,22 @@ import { useEffect, useMemo, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 
 import {
-  getToken,
-  setToken as saveToken,
-  clearToken,
+  getAccessToken,
+  setTokens,
+  clearTokens,
 } from "../../services/auth/authStore";
 
 import { AuthContext } from "../context/AuthContext";
 
 export default function AuthProvider({ children }) {
-  const [token, setToken] = useState(getToken());
+  const [token, setToken] = useState(getAccessToken());
 
   // =========================
   // LOGOUT
   // =========================
 
   const logout = () => {
-    clearToken();
+    clearTokens();
 
     setToken(null);
   };
@@ -65,10 +65,10 @@ export default function AuthProvider({ children }) {
   // LOGIN
   // =========================
 
-  const login = (newToken) => {
-    saveToken(newToken);
+  const login = (accessToken, refreshToken) => {
+    setTokens(accessToken, refreshToken);
 
-    setToken(newToken);
+    setToken(accessToken);
   };
 
   // =========================
