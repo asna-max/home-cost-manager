@@ -1,8 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { jwtDecode } from "jwt-decode";
 
@@ -14,32 +10,32 @@ import {
 
 import { AuthContext } from "../context/AuthContext";
 
-export default function AuthProvider({
-  children,
-}) {
-  const [token, setToken] =
-    useState(getToken());
+export default function AuthProvider({ children }) {
+  const [token, setToken] = useState(getToken());
+
+  // =========================
+  // LOGOUT
+  // =========================
+
+  const logout = () => {
+    clearToken();
+
+    setToken(null);
+  };
 
   // =========================
   // AUTO LOGOUT EVENT
   // =========================
 
   useEffect(() => {
-    const handleUnauthorized =
-      () => {
-        logout();
-      };
+    const handleUnauthorized = () => {
+      logout();
+    };
 
-    window.addEventListener(
-      "unauthorized",
-      handleUnauthorized,
-    );
+    window.addEventListener("unauthorized", handleUnauthorized);
 
     return () => {
-      window.removeEventListener(
-        "unauthorized",
-        handleUnauthorized,
-      );
+      window.removeEventListener("unauthorized", handleUnauthorized);
     };
   }, []);
 
@@ -51,23 +47,15 @@ export default function AuthProvider({
     if (!token) return null;
 
     try {
-      const decoded =
-        jwtDecode(token);
+      const decoded = jwtDecode(token);
 
       return {
-        name:
-          decoded.username ||
-          "User",
+        name: decoded.username || "User",
 
-        email:
-          decoded.email ||
-          "No Email",
+        email: decoded.email || "No Email",
       };
     } catch (err) {
-      console.error(
-        "Invalid token:",
-        err,
-      );
+      console.error("Invalid token:", err);
 
       return null;
     }
@@ -84,16 +72,6 @@ export default function AuthProvider({
   };
 
   // =========================
-  // LOGOUT
-  // =========================
-
-  const logout = () => {
-    clearToken();
-
-    setToken(null);
-  };
-
-  // =========================
   // VALUE
   // =========================
 
@@ -102,17 +80,12 @@ export default function AuthProvider({
 
     user,
 
-    isAuthenticated:
-      !!token,
+    isAuthenticated: !!token,
 
     login,
 
     logout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
