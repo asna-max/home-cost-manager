@@ -1,14 +1,16 @@
-import { apiRequest } from "./api/apiClient";
+import api from "./api/axios";
+
 import { ENDPOINTS } from "./api/endpoints";
 
 // =========================
 // GET HOUSEHOLDS
 // =========================
+
 export async function getHouseholds() {
   try {
-    const data = await apiRequest({
-      endpoint: ENDPOINTS.HOUSEHOLDS.LIST,
-    });
+    const response = await api.get(ENDPOINTS.HOUSEHOLDS.LIST);
+
+    const data = response.data;
 
     return Array.isArray(data)
       ? data
@@ -17,6 +19,7 @@ export async function getHouseholds() {
         : [];
   } catch (err) {
     console.error("Failed to fetch households:", err);
+
     return [];
   }
 }
@@ -24,31 +27,29 @@ export async function getHouseholds() {
 // =========================
 // CREATE HOUSEHOLD
 // =========================
-export function createHousehold(data) {
-  return apiRequest({
-    endpoint: ENDPOINTS.HOUSEHOLDS.LIST,
-    method: "POST",
-    body: data,
-  });
+
+export async function createHousehold(data) {
+  const response = await api.post(ENDPOINTS.HOUSEHOLDS.LIST, data);
+
+  return response.data;
 }
 
 // =========================
 // UPDATE HOUSEHOLD NAME
 // =========================
-export function updateHouseholdName(id, name) {
-  return apiRequest({
-    endpoint: `${ENDPOINTS.HOUSEHOLDS.LIST}${id}/`,
-    method: "PATCH",
-    body: { name },
+
+export async function updateHouseholdName(id, name) {
+  const response = await api.patch(`${ENDPOINTS.HOUSEHOLDS.LIST}${id}/`, {
+    name,
   });
+
+  return response.data;
 }
 
 // =========================
 // DELETE HOUSEHOLD
 // =========================
-export function deleteHousehold(id) {
-  return apiRequest({
-    endpoint: `${ENDPOINTS.HOUSEHOLDS.LIST}${id}/`,
-    method: "DELETE",
-  });
+
+export async function deleteHousehold(id) {
+  await api.delete(`${ENDPOINTS.HOUSEHOLDS.LIST}${id}/`);
 }
