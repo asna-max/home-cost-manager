@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 from pathlib import Path
+from datetime import timedelta
 import os
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -42,11 +44,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'users',
-    'households',
-    'bills',
-    'rest_framework',
-    'corsheaders',
+    # THIRD PARTY
+    "rest_framework",
+    "corsheaders",
+    "rest_framework_simplejwt.token_blacklist",
+
+    # APPS
+    "users",
+    "households",
+    "bills",
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -130,6 +136,22 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 
+# =========================
+# MEDIA FILES
+# =========================
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# =========================
+# CORS
+# =========================
+CORS_ALLOW_ALL_ORIGINS = True
+
+
+# =========================
+# DJANGO REST FRAMEWORK
+# =========================
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -140,13 +162,36 @@ REST_FRAMEWORK = {
     ],
 }
 
+# =========================
+# SIMPLE JWT
+# =========================
+SIMPLE_JWT = {
+    # ACCESS TOKEN
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=15,
+    ),
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+    # REFRESH TOKEN
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        days=7,
+    ),
 
+    # ROTATE REFRESH TOKENS
+    "ROTATE_REFRESH_TOKENS": True,
 
-CORS_ALLOW_ALL_ORIGINS = True
+    # BLACKLIST USED TOKENS
+    "BLACKLIST_AFTER_ROTATION": True,
 
+    # UPDATE LAST LOGIN
+    "UPDATE_LAST_LOGIN": True,
 
+    # AUTH HEADER
+    "AUTH_HEADER_TYPES": (
+        "Bearer",
+    ),
+}
+
+# =========================
+# OCR
+# =========================
 OCR_API_KEY = os.getenv("OCR_API_KEY")
-
