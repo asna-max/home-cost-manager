@@ -1,18 +1,18 @@
-import { apiRequest } from "../api/apiClient";
+import api from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
 
-export function login(username, password) {
-  return apiRequest({
-    endpoint: ENDPOINTS.AUTH.LOGIN,
-    method: "POST",
-    body: { username, password },
+export async function login(username, password) {
+  const response = await api.post(ENDPOINTS.AUTH.LOGIN, {
+    username,
+    password,
   });
+
+  return response.data;
 }
 
 export async function register(data) {
-  return apiRequest({
-    endpoint: ENDPOINTS.AUTH.REGISTER,
-    method: "POST",
-    body: data,
-  });
+  const response = await api.post(ENDPOINTS.AUTH.REGISTER, data);
+
+  return response.data;
 }
+
