@@ -1,16 +1,18 @@
-import { apiRequest } from "./api/apiClient";
+import api from "./api/axios";
 import { ENDPOINTS } from "./api/endpoints";
 
 // =========================
 // GET HOME PROFILE
 // =========================
+
 export async function getHomeProfile(householdId) {
   try {
-    return await apiRequest({
-      endpoint: ENDPOINTS.HOMES.DETAIL(householdId),
-    });
+    const response = await api.get(ENDPOINTS.HOMES.DETAIL(householdId));
+
+    return response.data;
   } catch (err) {
     console.error("Failed to load home profile:", err);
+
     return null;
   }
 }
@@ -18,11 +20,9 @@ export async function getHomeProfile(householdId) {
 // =========================
 // SAVE HOME PROFILE
 // =========================
-export function saveHomeProfile(data, householdId) {
-  return apiRequest({
-    endpoint: ENDPOINTS.HOMES.DETAIL(householdId),
-    method: "PUT",
-    body: data,
-    isFormData: true,
-  });
+
+export async function saveHomeProfile(data, householdId) {
+  const response = await api.put(ENDPOINTS.HOMES.DETAIL(householdId), data);
+
+  return response.data;
 }
