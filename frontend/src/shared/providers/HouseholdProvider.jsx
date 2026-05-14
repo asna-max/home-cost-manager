@@ -3,19 +3,26 @@ import {
   getHouseholds,
   createHousehold,
 } from "../../services/householdService";
+
 import { HouseholdContext } from "../context/HouseholdContext";
-import { getToken } from "../../services/auth/authStore";
+import { useAuth } from "../hooks/useAuth";
 
 export default function HouseholdProvider({ children }) {
+  const { isAuthenticated } = useAuth();
   const [households, setHouseholds] = useState([]);
   const [selectedHousehold, setSelectedHousehold] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // =========================
+  // LOAD HOUSEHOLDS
+  // =========================
 
   const loadHouseholds = useCallback(async () => {
     try {
       setLoading(true);
 
       const data = await getHouseholds();
+
       const list = Array.isArray(data) ? data : [];
 
       setHouseholds(list);
@@ -28,15 +35,29 @@ export default function HouseholdProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedHousehold]);
+
+  // =========================
+  // AUTH CHANGES
+  // =========================
 
   useEffect(() => {
-    const token = getToken();
+    // LOGOUT
+    if (!isAuthenticated) {
+      setHouseholds([]);
 
-    if (!token) return;
+      setSelectedHousehold(null);
 
+      return;
+    }
+
+    // LOGIN
     loadHouseholds();
-  }, [loadHouseholds]);
+  }, [isAuthenticated, loadHouseholds]);
+
+  // =========================
+  // CREATE HOUSEHOLD
+  // =========================
 
   const createNewHousehold = async () => {
     try {
@@ -45,24 +66,40 @@ export default function HouseholdProvider({ children }) {
       });
 
       setHouseholds((prev) => [...prev, newHousehold]);
+
       setSelectedHousehold(newHousehold.id);
     } catch (err) {
       console.error("Create household failed:", err);
     }
   };
 
+  // =========================
+  // CURRENT HOUSEHOLD
+  // =========================
+
   const currentHousehold = households.find((h) => h.id === selectedHousehold);
 
   const isOwner = currentHousehold?.role === "owner";
 
+  // =========================
+  // CONTEXT VALUE
+  // =========================
+
   const value = {
     households,
+
     selectedHousehold,
+
     setSelectedHousehold,
+
     refreshHouseholds: loadHouseholds,
+
     createHousehold: createNewHousehold,
+
     currentHousehold,
+
     isOwner,
+
     loading,
   };
 
