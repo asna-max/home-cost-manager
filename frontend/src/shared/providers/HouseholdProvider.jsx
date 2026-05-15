@@ -27,7 +27,9 @@ export default function HouseholdProvider({ children }) {
 
       setHouseholds(list);
 
-      if (!selectedHousehold && list.length > 0) {
+      const householdExists = list.some((h) => h.id === selectedHousehold);
+
+      if (!householdExists && list.length > 0) {
         setSelectedHousehold(list[0].id);
       }
     } catch (err) {

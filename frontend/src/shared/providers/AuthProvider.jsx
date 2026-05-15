@@ -40,6 +40,22 @@ export default function AuthProvider({ children }) {
   }, []);
 
   // =========================
+  // TOKEN REFRESH EVENT
+  // =========================
+
+  useEffect(() => {
+    const handleTokenRefresh = () => {
+      setToken(getAccessToken());
+    };
+
+    window.addEventListener("tokenRefreshed", handleTokenRefresh);
+
+    return () => {
+      window.removeEventListener("tokenRefreshed", handleTokenRefresh);
+    };
+  }, []);
+
+  // =========================
   // USER
   // =========================
 

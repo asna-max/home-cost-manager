@@ -1,4 +1,5 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 import {
   getAccessToken,
@@ -22,15 +23,95 @@ const api = axios.create({
 });
 
 // =========================
+// REFRESH LOCK
+// =========================
+
+let refreshPromise = null;
+
+// =========================
+// REFRESH ACCESS TOKEN
+// =========================
+
+async function refreshAccessToken() {
+  const refreshToken = getRefreshToken();
+
+  if (!refreshToken) {
+    throw new Error("No refresh token");
+  }
+
+  // ONLY ONE REFRESH REQUEST
+  if (!refreshPromise) {
+    refreshPromise = axios
+      .post(`${API_BASE}/api/token/refresh/`, {
+        refresh: refreshToken,
+      })
+      .then((response) => {
+        const newAccessToken = response.data.access;
+
+        // SAVE TOKENS
+        setTokens(newAccessToken, refreshToken);
+
+        // UPDATE GLOBAL HEADER
+        api.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
+
+        // UPDATE REACT
+        window.dispatchEvent(new Event("tokenRefreshed"));
+
+        return newAccessToken;
+      })
+      .catch((error) => {
+        clearTokens();
+
+        window.dispatchEvent(new Event("unauthorized"));
+
+        throw error;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+
+  return refreshPromise;
+}
+
+// =========================
 // REQUEST INTERCEPTOR
 // =========================
 
 api.interceptors.request.use(
-  (config) => {
-    const token = getAccessToken();
+  async (config) => {
+    let accessToken = getAccessToken();
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // =========================
+    // CHECK TOKEN EXPIRY
+    // =========================
+
+    if (accessToken) {
+      try {
+        const decoded = jwtDecode(accessToken);
+
+        // REFRESH 30 SEC BEFORE EXPIRY
+        const willExpireSoon = decoded.exp * 1000 < Date.now() + 30000;
+
+        // REFRESH TOKEN
+        if (willExpireSoon) {
+          accessToken = await refreshAccessToken();
+        }
+      } catch (error) {
+        console.error("Token validation failed:", error);
+
+        clearTokens();
+
+        window.dispatchEvent(new Event("unauthorized"));
+      }
+    }
+
+    // =========================
+    // SET AUTH HEADER
+    // =========================
+
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
     return config;
@@ -46,47 +127,17 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
 
-  async (error) => {
-    const originalRequest = error.config;
+  (error) => {
+    const status = error.response?.status;
 
     // =========================
-    // TOKEN EXPIRED
+    // UNAUTHORIZED
     // =========================
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+    if (status === 401) {
+      clearTokens();
 
-      try {
-        const refreshToken = getRefreshToken();
-
-        // NO REFRESH TOKEN
-        if (!refreshToken) {
-          throw new Error("No refresh token");
-        }
-
-        // REFRESH REQUEST
-        const response = await axios.post(`${API_BASE}/api/token/refresh/`, {
-          refresh: refreshToken,
-        });
-
-        const newAccessToken = response.data.access;
-
-        // SAVE NEW ACCESS TOKEN
-        setTokens(newAccessToken, refreshToken);
-
-        // UPDATE HEADER
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-
-        // RETRY ORIGINAL REQUEST
-        return api(originalRequest);
-      } catch (refreshError) {
-        // REFRESH FAILED
-        clearTokens();
-
-        window.dispatchEvent(new Event("unauthorized"));
-
-        return Promise.reject(refreshError);
-      }
+      window.dispatchEvent(new Event("unauthorized"));
     }
 
     return Promise.reject(error);

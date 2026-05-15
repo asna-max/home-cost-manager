@@ -15,27 +15,33 @@ import os
 from dotenv import load_dotenv
 
 
+# =========================
+# LOAD ENV
+# =========================
 load_dotenv()
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# =========================
+# BASE DIR
+# =========================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
+# =========================
+# SECURITY
+# =========================
+SECRET_KEY = os.getenv("SECRET_KEY")
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-hyr0d@mw%%*+j75!6lch7)q6znwb8w*j+dsvf%b%+12a=yzgb%'
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+]
 
-ALLOWED_HOSTS = []
 
-
-# Application definition
-
+# =========================
+# APPLICATIONS
+# =========================
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -55,8 +61,14 @@ INSTALLED_APPS = [
     "bills",
 ]
 
+# =========================
+# AUTH USER
+# =========================
 AUTH_USER_MODEL = 'users.User'
 
+# =========================
+# MIDDLEWARE
+# =========================
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -68,8 +80,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# =========================
+# URLS / WSGI
+# =========================
 ROOT_URLCONF = 'core.urls'
+WSGI_APPLICATION = 'core.wsgi.application'
 
+
+# =========================
+# TEMPLATES
+# =========================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -85,12 +105,10 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
+# =========================
+# DATABASE
+# =========================
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -99,8 +117,9 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
+# =========================
+# PASSWORD VALIDATION
+# =========================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -118,8 +137,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
+# =========================
+# INTERNATIONALIZATION
+# =========================
 
 LANGUAGE_CODE = 'en-us'
 
@@ -130,8 +150,9 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
+# =========================
+# STATIC FILES
+# =========================
 
 STATIC_URL = 'static/'
 
@@ -146,7 +167,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # =========================
 # CORS
 # =========================
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
 
 
 # =========================
@@ -154,12 +177,13 @@ CORS_ALLOW_ALL_ORIGINS = True
 # =========================
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated'
     ],
+
+    "UNAUTHENTICATED_USER": None,
 }
 
 # =========================
@@ -168,7 +192,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     # ACCESS TOKEN
     "ACCESS_TOKEN_LIFETIME": timedelta(
-        minutes=15,
+        minutes=1,
     ),
 
     # REFRESH TOKEN
@@ -177,10 +201,10 @@ SIMPLE_JWT = {
     ),
 
     # ROTATE REFRESH TOKENS
-    "ROTATE_REFRESH_TOKENS": True,
+    "ROTATE_REFRESH_TOKENS": False,
 
     # BLACKLIST USED TOKENS
-    "BLACKLIST_AFTER_ROTATION": True,
+    "BLACKLIST_AFTER_ROTATION": False,
 
     # UPDATE LAST LOGIN
     "UPDATE_LAST_LOGIN": True,
@@ -195,3 +219,11 @@ SIMPLE_JWT = {
 # OCR
 # =========================
 OCR_API_KEY = os.getenv("OCR_API_KEY")
+
+
+# =========================
+# DEFAULT PRIMARY KEY
+# =========================
+DEFAULT_AUTO_FIELD = (
+    "django.db.models.BigAutoField"
+)
