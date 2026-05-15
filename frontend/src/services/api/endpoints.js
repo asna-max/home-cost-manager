@@ -1,6 +1,6 @@
 export const ENDPOINTS = {
   AUTH: {
-    LOGIN: "token/",
+    LOGIN: "auth/token/",
     REGISTER: "auth/register/",
   },
 
@@ -16,6 +16,7 @@ export const ENDPOINTS = {
     ACCEPT: (id) => `households/invite/${id}/accept/`,
     DECLINE: (id) => `households/invite/${id}/decline/`,
   },
+
   HOMES: {
     DETAIL: (id) => `households/homes/${id}/`,
   },

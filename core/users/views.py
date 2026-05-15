@@ -10,7 +10,11 @@ from rest_framework.views import (
 from rest_framework.permissions import AllowAny
 
 from .serializers import (
-    RegisterSerializer,
+    RegisterSerializer, CustomTokenObtainPairSerializer
+)
+
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
 )
 
 
@@ -36,3 +40,11 @@ class RegisterView(APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+
+class CustomTokenObtainPairView(
+    TokenObtainPairView
+):
+    serializer_class = (
+        CustomTokenObtainPairSerializer
+    )
