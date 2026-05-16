@@ -1,4 +1,5 @@
 import { useHousehold } from "../hooks/useHousehold";
+
 import { useNavigate } from "react-router-dom";
 
 export default function HouseholdSwitcher() {
@@ -24,15 +25,15 @@ export default function HouseholdSwitcher() {
           navigate("/home");
         }}
         className="
-        bg-blue-500
-        hover:bg-blue-600
-        text-white
-        px-4
-        py-2
-        rounded-md
-        text-sm
-        transition
-      "
+          bg-blue-500
+          hover:bg-blue-600
+          text-white
+          px-4
+          py-2
+          rounded-md
+          text-sm
+          transition
+        "
       >
         + Create Household
       </button>
@@ -50,14 +51,19 @@ export default function HouseholdSwitcher() {
           appearance-none
           border
           border-gray-300
+          dark:border-gray-600
           px-3
           py-2
           pr-8
           rounded-md
           text-sm
           bg-white
+          dark:bg-gray-800
+          text-gray-800
+          dark:text-white
           shadow-sm
           hover:border-gray-400
+          dark:hover:border-gray-500
           focus:outline-none
           focus:ring-2
           focus:ring-blue-400
@@ -69,6 +75,7 @@ export default function HouseholdSwitcher() {
 
           if (value === "new") {
             await createHousehold();
+
             navigate("/home");
           } else {
             setSelectedHousehold(Number(value));
@@ -85,6 +92,7 @@ export default function HouseholdSwitcher() {
       </select>
 
       {/* ARROW */}
+
       <div
         className="
           pointer-events-none
@@ -94,6 +102,7 @@ export default function HouseholdSwitcher() {
           flex
           items-center
           text-gray-400
+          dark:text-gray-500
           text-xs
         "
       >
