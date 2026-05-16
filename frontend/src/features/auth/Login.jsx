@@ -1,5 +1,7 @@
 import { useState } from "react";
+
 import { useNavigate, Link } from "react-router-dom";
+
 import { login as loginUser } from "../../services/auth/authService";
 
 import AuthLayout from "./components/AuthLayout";
@@ -35,7 +37,8 @@ export default function Login({ login }) {
         throw new Error("Invalid username or password");
       }
 
-      // AUTH PROVIDER LOGIN
+      // AUTH LOGIN
+
       login(data.access, data.refresh);
 
       navigate("/dashboard");
@@ -56,8 +59,12 @@ export default function Login({ login }) {
         onSubmit={handleLogin}
         className="
           bg-white
+          dark:bg-gray-800
           rounded-2xl
           shadow-xl
+          border
+          border-gray-200
+          dark:border-gray-700
           p-8
           space-y-6
         "
@@ -70,12 +77,20 @@ export default function Login({ login }) {
               text-3xl
               font-bold
               text-gray-900
+              dark:text-white
             "
           >
             Login
           </h2>
 
-          <p className="text-gray-500">Welcome back to HomeCost</p>
+          <p
+            className="
+              text-gray-500
+              dark:text-gray-400
+            "
+          >
+            Welcome back to HomeCost
+          </p>
         </div>
 
         {/* ERROR */}
@@ -84,7 +99,9 @@ export default function Login({ login }) {
           <div
             className="
               bg-red-100
+              dark:bg-red-900/30
               text-red-600
+              dark:text-red-300
               text-sm
               p-3
               rounded-xl
@@ -121,11 +138,12 @@ export default function Login({ login }) {
           className="
             w-full
             bg-blue-500
+            hover:bg-blue-600
             text-white
             py-3
             rounded-xl
-            hover:bg-blue-600
             disabled:bg-gray-300
+            dark:disabled:bg-gray-700
             transition
             font-medium
           "
@@ -140,6 +158,7 @@ export default function Login({ login }) {
             text-sm
             text-center
             text-gray-500
+            dark:text-gray-400
           "
         >
           Don't have an account?{" "}
