@@ -2,7 +2,7 @@ export default function SettingsSection({ title, description, children }) {
   return (
     <section
       className="
-        bg-white
+        bg-white dark:bg-gray-800
         rounded-2xl
         border
         shadow-sm
@@ -16,7 +16,7 @@ export default function SettingsSection({ title, description, children }) {
           className="
             text-xl
             font-semibold
-            text-gray-900
+            text-gray-900 dark:text-white
           "
         >
           {title}

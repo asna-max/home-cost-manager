@@ -1,10 +1,9 @@
-import { useState } from "react";
-
+import { useTheme } from "../../shared/hooks/useTheme";
 import SettingsSection from "./components/SettingsSection";
 import SettingsToggle from "./components/SettingsToggle";
 
 export default function Settings() {
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, setDarkMode } = useTheme();
   return (
     <div className="space-y-8">
       {/* HEADER */}
