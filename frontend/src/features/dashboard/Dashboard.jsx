@@ -22,18 +22,36 @@ export default function Dashboard() {
   // =========================
   // NO HOUSEHOLD
   // =========================
+
   if (!selectedHousehold) {
     return (
-      <div className="text-center mt-10 text-gray-500">Select household</div>
+      <div
+        className="
+          text-center
+          mt-10
+          text-gray-500
+          dark:text-gray-400
+        "
+      >
+        Select household
+      </div>
     );
   }
 
   // =========================
   // LOADING
   // =========================
+
   if (loading) {
     return (
-      <div className="text-center mt-10 text-gray-500">
+      <div
+        className="
+          text-center
+          mt-10
+          text-gray-500
+          dark:text-gray-400
+        "
+      >
         Loading dashboard...
       </div>
     );
@@ -42,20 +60,33 @@ export default function Dashboard() {
   // =========================
   // DASHBOARD
   // =========================
+
   return (
     <div className="space-y-6">
       {/* SUMMARY */}
+
       {summary && <SummaryCards summary={summary} />}
 
       {/* MONTHLY CHART */}
+
       <MonthlyChart data={monthlyData} />
 
-      {/* MONTHLY CHART */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      {/* CHARTS */}
+
+      <div
+        className="
+          grid
+          grid-cols-1
+          xl:grid-cols-2
+          gap-6
+        "
+      >
         {/* DISTRIBUTION */}
+
         <DistributionChart data={distributionData} stats={distributionStats} />
 
         {/* RECENT BILLS */}
+
         <RecentBills bills={recentBills} />
       </div>
     </div>
