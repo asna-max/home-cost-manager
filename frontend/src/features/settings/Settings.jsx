@@ -1,3 +1,5 @@
+import SettingsSection from "./components/SettingsSection";
+
 export default function Settings() {
   return (
     <div className="space-y-8">
@@ -11,17 +13,12 @@ export default function Settings() {
       </div>
 
       {/* CONTENT */}
-      <div
-        className="
-          bg-white
-          rounded-2xl
-          shadow-sm
-          border
-          p-6
-        "
+      <SettingsSection
+        title="General"
+        description="Manage your general application settings."
       >
-        Settings Page
-      </div>
+        <p className="text-gray-600">Settings content coming soon.</p>
+      </SettingsSection>
     </div>
   );
 }
