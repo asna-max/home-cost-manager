@@ -1,16 +1,44 @@
+import AppCard from "../../../shared/components/AppCard";
+
 export default function FilePreview({ file, previewUrl }) {
+  // =========================
+  // EMPTY
+  // =========================
+
   if (!file) return null;
 
+  // =========================
+  // PREVIEW
+  // =========================
+
   return (
-    <div style={{ maxWidth: "600px", marginBottom: "20px" }}>
+    <AppCard className="max-w-3xl mx-auto">
+      {/* IMAGE */}
+
       {file.type?.includes("image") ? (
-        <img src={previewUrl} style={{ width: "100%" }} />
+        <img
+          src={previewUrl}
+          alt="Preview"
+          className="
+            w-full
+            rounded-lg
+            object-contain
+            max-h-[600px]
+          "
+        />
       ) : (
+        /* PDF */
+
         <iframe
           src={previewUrl}
-          style={{ width: "100%", height: "400px" }}
+          title="PDF Preview"
+          className="
+            w-full
+            h-[600px]
+            rounded-lg
+          "
         />
       )}
-    </div>
+    </AppCard>
   );
 }
