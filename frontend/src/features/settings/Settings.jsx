@@ -1,6 +1,10 @@
+import { useState } from "react";
+
 import SettingsSection from "./components/SettingsSection";
+import SettingsToggle from "./components/SettingsToggle";
 
 export default function Settings() {
+  const [darkMode, setDarkMode] = useState(false);
   return (
     <div className="space-y-8">
       {/* HEADER */}
@@ -17,7 +21,12 @@ export default function Settings() {
         title="General"
         description="Manage your general application settings."
       >
-        <p className="text-gray-600">Settings content coming soon.</p>
+        <SettingsToggle
+          label="Dark Mode"
+          description="Enable dark appearance for the application."
+          checked={darkMode}
+          onChange={setDarkMode}
+        />
       </SettingsSection>
     </div>
   );
