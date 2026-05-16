@@ -20,6 +20,7 @@ export default function Layout({ children, user, handleLogout }) {
     { to: "/home", label: "Home" },
     { to: "/bills", label: "Bills" },
     { to: "/upload", label: "Upload" },
+    { to: "/settings", label: "Settings" },
   ];
 
   return (
