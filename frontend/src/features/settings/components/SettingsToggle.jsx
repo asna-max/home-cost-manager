@@ -14,11 +14,13 @@ export default function SettingsToggle({
       "
     >
       {/* TEXT */}
+
       <div>
         <h3
           className="
             font-medium
             text-gray-900
+            dark:text-white
           "
         >
           {label}
@@ -29,6 +31,7 @@ export default function SettingsToggle({
             className="
               text-sm
               text-gray-500
+              dark:text-gray-400
               mt-1
             "
           >
@@ -38,6 +41,7 @@ export default function SettingsToggle({
       </div>
 
       {/* TOGGLE */}
+
       <button
         type="button"
         onClick={() => onChange(!checked)}
@@ -47,7 +51,7 @@ export default function SettingsToggle({
           h-8
           rounded-full
           transition
-          ${checked ? "bg-blue-500" : "bg-gray-300"}
+          ${checked ? "bg-blue-500" : "bg-gray-300 dark:bg-gray-600"}
         `}
       >
         <span
