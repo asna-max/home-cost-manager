@@ -13,6 +13,7 @@ import HomeProfile from "./features/home/HomeProfile";
 import Dashboard from "./features/dashboard/Dashboard";
 import Layout from "./shared/components/Layout";
 import ProtectedRoute from "./shared/components/ProtectedRoute";
+import Settings from "./features/settings/Settings";
 
 import { useAuth } from "./shared/hooks/useAuth";
 
@@ -95,6 +96,18 @@ function App() {
           }
         />
 
+        {/* ================= SETTINGS ================= */}
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Layout user={user} handleLogout={logout}>
+                <Settings />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
         {/* ================= FALLBACK ================= */}
 
         <Route path="*" element={<Navigate to="/" replace />} />
