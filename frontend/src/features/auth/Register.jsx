@@ -1,16 +1,24 @@
 import { useState } from "react";
+
 import { Link, useNavigate } from "react-router-dom";
+
 import AuthLayout from "./components/AuthLayout";
 import AuthHero from "./components/AuthHero";
 import AuthInput from "./components/AuthInput";
+
 import { register } from "../../services/auth/authService";
 
 export default function Register() {
   const [username, setUsername] = useState("");
+
   const [email, setEmail] = useState("");
+
   const [password, setPassword] = useState("");
+
   const [confirmPassword, setConfirmPassword] = useState("");
+
   const [error, setError] = useState("");
+
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -25,6 +33,7 @@ export default function Register() {
     setError("");
 
     // PASSWORD CHECK
+
     if (password !== confirmPassword) {
       setError("Passwords do not match");
 
@@ -58,27 +67,60 @@ export default function Register() {
         onSubmit={handleRegister}
         className="
           bg-white
+          dark:bg-gray-800
           rounded-2xl
           shadow-xl
+          border
+          border-gray-200
+          dark:border-gray-700
           p-8
           space-y-6
         "
       >
         {/* HEADER */}
-        <div className="space-y-2">
-          <h2 className="text-3xl font-bold text-gray-900">Register</h2>
 
-          <p className="text-gray-500">Create your HomeCost account</p>
+        <div className="space-y-2">
+          <h2
+            className="
+              text-3xl
+              font-bold
+              text-gray-900
+              dark:text-white
+            "
+          >
+            Register
+          </h2>
+
+          <p
+            className="
+              text-gray-500
+              dark:text-gray-400
+            "
+          >
+            Create your HomeCost account
+          </p>
         </div>
 
         {/* ERROR */}
+
         {error && (
-          <div className="bg-red-100 text-red-600 text-sm p-3 rounded-xl">
+          <div
+            className="
+              bg-red-100
+              dark:bg-red-900/30
+              text-red-600
+              dark:text-red-300
+              text-sm
+              p-3
+              rounded-xl
+            "
+          >
             {error}
           </div>
         )}
 
         {/* USERNAME */}
+
         <AuthInput
           label="Username"
           value={username}
@@ -87,6 +129,7 @@ export default function Register() {
         />
 
         {/* EMAIL */}
+
         <AuthInput
           label="Email"
           type="email"
@@ -96,6 +139,7 @@ export default function Register() {
         />
 
         {/* PASSWORD */}
+
         <AuthInput
           label="Password"
           type="password"
@@ -105,6 +149,7 @@ export default function Register() {
         />
 
         {/* CONFIRM PASSWORD */}
+
         <AuthInput
           label="Confirm Password"
           type="password"
@@ -114,6 +159,7 @@ export default function Register() {
         />
 
         {/* SUBMIT */}
+
         <button
           type="submit"
           disabled={
@@ -122,11 +168,12 @@ export default function Register() {
           className="
             w-full
             bg-blue-500
+            hover:bg-blue-600
             text-white
             py-3
             rounded-xl
-            hover:bg-blue-600
             disabled:bg-gray-300
+            dark:disabled:bg-gray-700
             transition
             font-medium
           "
@@ -135,9 +182,23 @@ export default function Register() {
         </button>
 
         {/* LOGIN */}
-        <p className="text-sm text-center text-gray-500">
+
+        <p
+          className="
+            text-sm
+            text-center
+            text-gray-500
+            dark:text-gray-400
+          "
+        >
           Already have an account?{" "}
-          <Link to="/" className="text-blue-500 hover:underline">
+          <Link
+            to="/"
+            className="
+              text-blue-500
+              hover:underline
+            "
+          >
             Login
           </Link>
         </p>
