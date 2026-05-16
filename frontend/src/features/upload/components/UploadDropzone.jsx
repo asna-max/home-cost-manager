@@ -4,36 +4,117 @@ export default function UploadDropzone({ onFile, loading }) {
   return (
     <div className="space-y-6">
       {/* DROPZONE */}
+
       <div
-        className="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center bg-white cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition"
+        className="
+          border-2
+          border-dashed
+          border-gray-300
+          dark:border-gray-700
+          rounded-xl
+          p-10
+          text-center
+          bg-white
+          dark:bg-gray-800
+          cursor-pointer
+          hover:border-blue-500
+          hover:bg-blue-50
+          dark:hover:bg-gray-700
+          transition
+        "
         onClick={() => document.getElementById("fileInput").click()}
         onDrop={(e) => {
           e.preventDefault();
+
           onFile(e.dataTransfer.files[0]);
         }}
         onDragOver={(e) => e.preventDefault()}
       >
-        <FaUpload className="mx-auto text-3xl text-gray-400 mb-3" />
+        {/* ICON */}
 
-        <p className="text-gray-700 font-medium">
+        <FaUpload
+          className="
+            mx-auto
+            text-3xl
+            text-gray-400
+            dark:text-gray-500
+            mb-3
+          "
+        />
+
+        {/* TITLE */}
+
+        <p
+          className="
+            text-gray-700
+            dark:text-gray-200
+            font-medium
+          "
+        >
           {loading ? "Processing..." : "Drag & Drop or Click"}
         </p>
 
-        <p className="text-sm text-gray-400 mt-1">
+        {/* SUBTITLE */}
+
+        <p
+          className="
+            text-sm
+            text-gray-400
+            dark:text-gray-500
+            mt-1
+          "
+        >
           PDF or Image
         </p>
       </div>
 
       {/* CAMERA */}
+
       <div
-        className="border-2 border-dashed border-green-300 rounded-xl p-6 text-center bg-green-50 cursor-pointer hover:bg-green-100 transition"
+        className="
+          border-2
+          border-dashed
+          border-green-300
+          dark:border-green-700
+          rounded-xl
+          p-6
+          text-center
+          bg-green-50
+          dark:bg-green-900/20
+          cursor-pointer
+          hover:bg-green-100
+          dark:hover:bg-green-900/30
+          transition
+        "
         onClick={() => document.getElementById("cameraInput").click()}
       >
-        <FaCamera className="mx-auto text-2xl text-green-600 mb-2" />
-        <p className="text-green-700 font-medium">Take Photo</p>
+        {/* ICON */}
+
+        <FaCamera
+          className="
+            mx-auto
+            text-2xl
+            text-green-600
+            dark:text-green-400
+            mb-2
+          "
+        />
+
+        {/* TEXT */}
+
+        <p
+          className="
+            text-green-700
+            dark:text-green-300
+            font-medium
+          "
+        >
+          Take Photo
+        </p>
       </div>
 
-      {/* INPUTS */}
+      {/* FILE INPUT */}
+
       <input
         id="fileInput"
         type="file"
@@ -41,6 +122,8 @@ export default function UploadDropzone({ onFile, loading }) {
         className="hidden"
         onChange={(e) => onFile(e.target.files[0])}
       />
+
+      {/* CAMERA INPUT */}
 
       <input
         id="cameraInput"
