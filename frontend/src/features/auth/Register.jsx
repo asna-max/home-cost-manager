@@ -5,23 +5,20 @@ import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "./components/AuthLayout";
 import AuthHero from "./components/AuthHero";
 import AuthInput from "./components/AuthInput";
+import PasswordRequirements from "./components/PasswordRequirements";
 
+import { validatePassword } from "./utils/passwordValidation";
 import { register } from "../../services/auth/authService";
 
 export default function Register() {
   const [username, setUsername] = useState("");
-
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
-
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [error, setError] = useState("");
-
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
+  const validation = validatePassword(password);
 
   // =========================
   // REGISTER
@@ -33,7 +30,6 @@ export default function Register() {
     setError("");
 
     // PASSWORD CHECK
-
     if (password !== confirmPassword) {
       setError("Passwords do not match");
 
@@ -78,7 +74,6 @@ export default function Register() {
         "
       >
         {/* HEADER */}
-
         <div className="space-y-2">
           <h2
             className="
@@ -102,7 +97,6 @@ export default function Register() {
         </div>
 
         {/* ERROR */}
-
         {error && (
           <div
             className="
@@ -120,7 +114,6 @@ export default function Register() {
         )}
 
         {/* USERNAME */}
-
         <AuthInput
           label="Username"
           value={username}
@@ -129,7 +122,6 @@ export default function Register() {
         />
 
         {/* EMAIL */}
-
         <AuthInput
           label="Email"
           type="email"
@@ -139,7 +131,6 @@ export default function Register() {
         />
 
         {/* PASSWORD */}
-
         <AuthInput
           label="Password"
           type="password"
@@ -148,8 +139,10 @@ export default function Register() {
           placeholder="Enter password"
         />
 
-        {/* CONFIRM PASSWORD */}
+        {/* PASSWORD REQUIREMENTS */}
+        <PasswordRequirements validation={validation} />
 
+        {/* CONFIRM PASSWORD */}
         <AuthInput
           label="Confirm Password"
           type="password"
@@ -159,7 +152,6 @@ export default function Register() {
         />
 
         {/* SUBMIT */}
-
         <button
           type="submit"
           disabled={
@@ -182,7 +174,6 @@ export default function Register() {
         </button>
 
         {/* LOGIN */}
-
         <p
           className="
             text-sm
