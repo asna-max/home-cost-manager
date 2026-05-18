@@ -25,13 +25,12 @@ const api = axios.create({
 // =========================
 // REFRESH LOCK
 // =========================
-
 let refreshPromise = null;
+const PUBLIC_ROUTES = ["/auth/login/", "/auth/register/"];
 
 // =========================
 // REFRESH ACCESS TOKEN
 // =========================
-
 async function refreshAccessToken() {
   const refreshToken = getRefreshToken();
 
@@ -74,6 +73,10 @@ async function refreshAccessToken() {
   return refreshPromise;
 }
 
+function isPublicRoute(url) {
+  return PUBLIC_ROUTES.some((route) => url?.includes(route));
+}
+
 // =========================
 // REQUEST INTERCEPTOR
 // =========================
@@ -109,8 +112,7 @@ api.interceptors.request.use(
     // =========================
     // SET AUTH HEADER
     // =========================
-
-    if (accessToken) {
+    if (accessToken && !isPublicRoute(config.url)) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
