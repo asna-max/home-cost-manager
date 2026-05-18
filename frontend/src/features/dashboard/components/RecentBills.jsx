@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { useSettings } from "../../settings/hooks/useSettings";
+import { formatCurrency } from "../../../shared/utils/formatCurrency";
 
 import AppCard from "../../../shared/components/AppCard";
 
@@ -24,6 +26,7 @@ function formatType(type) {
 
 export default function RecentBills({ bills }) {
   const navigate = useNavigate();
+  const { settings } = useSettings();
 
   return (
     <AppCard>
@@ -142,7 +145,7 @@ export default function RecentBills({ bills }) {
                       dark:text-white
                     "
                   >
-                    CHF {Number(bill.amount || 0).toFixed(2)}
+                    {formatCurrency(bill.amount, settings.currency)}
                   </p>
 
                   {/* STATUS */}
