@@ -1,163 +1,262 @@
-from households.serializers import HomeProfileSerializer
-from households.models import Household, HouseholdMember, HomeProfile
+from households.serializers import (
+    HomeProfileSerializer,
+    HouseholdsSerializer,
+    InvitationSerializer,
+)
+from common.permissions import (
+    IsHouseholdMember,
+    IsHouseholdOwner,
+)
+from households.models import (
+    HomeProfile,
+    Household,
+    HouseholdMember,
+    Invitation,
+)
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import (
+    IsAuthenticated,
+)
+from rest_framework.parsers import (
+    FormParser,
+    MultiPartParser,
+)
 from rest_framework import status
-from rest_framework.parsers import MultiPartParser, FormParser
 from django.shortcuts import get_object_or_404
 
-from households.models import Household, HouseholdMember, Invitation, HomeProfile
-from households.serializers import HouseholdsSerializer, InvitationSerializer, HomeProfileSerializer
 
+# =========================
+# HOUSEHOLDS
+# =========================
 
 class HouseholdListCreateView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [
+        IsAuthenticated,
+    ]
 
     def get(self, request):
         households = Household.objects.filter(
-            householdmember__user=request.user)
+            householdmember__user=request.user,
+        )
 
         serializer = HouseholdsSerializer(
-            households, many=True, context={'request': request})
+            households,
+            many=True,
+            context={"request": request},
+        )
+
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = HouseholdsSerializer(data=request.data)
+        serializer = HouseholdsSerializer(
+            data=request.data,
+            context={"request": request},
+        )
 
-        if serializer.is_valid():
-            # Household erstellen
-            household = serializer.save(owner=request.user)
+        serializer.is_valid(
+            raise_exception=True,
+        )
 
-            # Owner automatisch als Member eintragen
-            HouseholdMember.objects.create(
-                user=request.user, household=household, role='owner')
+        household = serializer.save(
+            owner=request.user,
+        )
 
-            return Response(HouseholdsSerializer(household, context={'request': request}).data, status=status.HTTP_201_CREATED)
+        HouseholdMember.objects.create(
+            user=request.user,
+            household=household,
+            role="owner",
+        )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            HouseholdsSerializer(
+                household,
+                context={"request": request},
+            ).data,
+            status=status.HTTP_201_CREATED,
+        )
 
+
+# =========================
+# INVITATIONS
+# =========================
 
 class InvitationCreateView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [
+        IsAuthenticated,
+        IsHouseholdOwner,
+    ]
 
-    def post(self, request):
-        household_id = request.data.get('household')
-        email = request.data.get('email')
+    def post(self, request, household_id):
+        email = request.data.get("email")
 
-        if not household_id or not email:
+        if not email:
             return Response(
-                {"error": "household and email are required"},
-                status=status.HTTP_400_BAD_REQUEST
+                {
+                    "error": "Email is required",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
-
-        membership = HouseholdMember.objects.filter(
-            household_id=household_id,
-            user=request.user
-        ).first()
-
-        if not membership:
-            return Response({"error": "Not allowed"}, status=status.HTTP_403_FORBIDDEN)
-
-        if membership.role != 'owner':
-            return Response({"error": "Only owner can invite"}, status=status.HTTP_403_FORBIDDEN)
 
         existing = Invitation.objects.filter(
             household_id=household_id,
             email=email,
-            status='pending'
+            status="pending",
         ).exists()
 
         if existing:
             return Response(
-                {"error": "Invitation already exists"},
-                status=400
+                {
+                    "error": "Invitation already exists",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-        serializer = InvitationSerializer(data=request.data)
+        serializer = InvitationSerializer(
+            data=request.data,
+            context={"request": request},
+        )
 
-        if serializer.is_valid():
-            serializer.save(
-                invited_by_user=request.user,
-                household=membership.household,
-                status='pending'
-            )
-            return Response(serializer.data, status=201)
+        serializer.is_valid(
+            raise_exception=True,
+        )
 
-        return Response(serializer.errors, status=400)
+        household = get_object_or_404(
+            Household,
+            pk=household_id,
+        )
+
+        serializer.save(
+            invited_by_user=request.user,
+            household=household,
+            status="pending",
+        )
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class InvitationAcceptView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [
+        IsAuthenticated,
+    ]
 
     def post(self, request, pk):
-        invitation = get_object_or_404(Invitation, pk=pk)
+        invitation = get_object_or_404(
+            Invitation,
+            pk=pk,
+        )
 
         if invitation.email != request.user.email:
-            return Response({"error": "Not allowed"}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {
+                    "error": "Not allowed",
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
-        if invitation.status != 'pending':
-            return Response({"error": "Already handled"}, status=status.HTTP_400_BAD_REQUEST)
+        if invitation.status != "pending":
+            return Response(
+                {
+                    "error": "Invitation already handled",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         HouseholdMember.objects.create(
-            user=request.user, household=invitation.household, role='member')
+            user=request.user,
+            household=invitation.household,
+            role="member",
+        )
 
-        invitation.status = 'accepted'
+        invitation.status = "accepted"
         invitation.save()
 
-        return Response({"message": "Joined household"})
+        return Response(
+            {
+                "message": "Joined household",
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class InvitationListView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [
+        IsAuthenticated,
+    ]
 
     def get(self, request):
         invitations = Invitation.objects.filter(
             email=request.user.email,
-            status='pending'
+            status="pending",
         )
 
-        serializer = InvitationSerializer(invitations, many=True)
+        serializer = InvitationSerializer(
+            invitations,
+            many=True,
+            context={"request": request},
+        )
+
         return Response(serializer.data)
 
 
 class InvitationDeclineView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [
+        IsAuthenticated,
+    ]
 
     def post(self, request, pk):
-        invitation = get_object_or_404(Invitation, pk=pk)
+        invitation = get_object_or_404(
+            Invitation,
+            pk=pk,
+        )
 
-        if invitation.status != request.user.email:
-            return Response({"error": "Not allowed"}, status=403)
-
-        if invitation.status != 'pendig':
-            return Response({"error": "Already handled"}, status=400)
-
-        invitation.status = 'declined'
-        invitation.save()
-
-        return Response({"message": "Invitation declined"})
-
-
-class HomeProfileView(APIView):
-    permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser]
-
-    def get(self, request, household_id):
-        # Zugriff prüfen (User muss Mitglied sein)
-        is_member = HouseholdMember.objects.filter(
-            household_id=household_id,
-            user=request.user
-        ).exists()
-
-        if not is_member:
+        if invitation.email != request.user.email:
             return Response(
-                {"error": "Not allowed"},
-                status=status.HTTP_403_FORBIDDEN
+                {
+                    "error": "Not allowed",
+                },
+                status=status.HTTP_403_FORBIDDEN,
             )
 
-        # Profil immer holen oder erstellen
-        profile, created = HomeProfile.objects.get_or_create(
+        if invitation.status != "pending":
+            return Response(
+                {
+                    "error": "Invitation already handled",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        invitation.status = "declined"
+        invitation.save()
+
+        return Response(
+            {
+                "message": "Invitation declined",
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+# =========================
+# HOME PROFILE
+# =========================
+
+class HomeProfileView(APIView):
+    permission_classes = [
+        IsAuthenticated,
+        IsHouseholdMember,
+    ]
+
+    parser_classes = [
+        MultiPartParser,
+        FormParser,
+    ]
+
+    def get_profile(self, household_id):
+        profile, _ = HomeProfile.objects.get_or_create(
             household_id=household_id,
             defaults={
                 "property_type": "rent",
@@ -165,100 +264,118 @@ class HomeProfileView(APIView):
                 "number_of_rooms": 1,
                 "city": "",
                 "heating_type": "gas",
-            }
+            },
+        )
+
+        return profile
+
+    def get(self, request, household_id):
+        profile = self.get_profile(
+            household_id,
         )
 
         serializer = HomeProfileSerializer(
-            profile, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            profile,
+            context={"request": request},
+        )
 
-    # UPDATE PROFILE
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
+
     def put(self, request, household_id):
-        # Zugriff prüfen
         membership = HouseholdMember.objects.filter(
             household_id=household_id,
-            user=request.user
-        ).first()
+            user=request.user,
+            role="owner",
+        ).exists()
 
         if not membership:
             return Response(
-                {"error": "Not allowed"},
-                status=status.HTTP_403_FORBIDDEN
+                {
+                    "error": "Only owner can edit",
+                },
+                status=status.HTTP_403_FORBIDDEN,
             )
 
-        #  Nur Owner darf ändern (optional aber gut)
-        if membership.role != "owner":
-            return Response(
-                {"error": "Only owner can edit"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-
-        # Profil holen oder erstellen
-        profile, created = HomeProfile.objects.get_or_create(
-            household_id=household_id,
-            defaults={
-                "property_type": "rent",
-                "building_type": "brick",
-                "number_of_rooms": 1,
-                "city": "",
-                "heating_type": "gas",
-            }
+        profile = self.get_profile(
+            household_id,
         )
 
         serializer = HomeProfileSerializer(
             profile,
             data=request.data,
-            partial=True,  # erlaubt Teil-Updates
-            context={'request': request}
+            partial=True,
+            context={"request": request},
         )
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer.is_valid(
+            raise_exception=True,
+        )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
 
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
+
+
+# =========================
+# HOUSEHOLD UPDATE
+# =========================
 
 class HouseholdUpdateView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [
+        IsAuthenticated,
+        IsHouseholdOwner,
+    ]
+
+    def get_household(self, pk):
+        return get_object_or_404(
+            Household,
+            pk=pk,
+        )
 
     def patch(self, request, pk):
-        household = get_object_or_404(Household, pk=pk)
-
-        if household.owner != request.user:
-            return Response({"error": "Not allowed"}, status=403)
+        household = self.get_household(pk)
 
         name = request.data.get("name")
 
         if not name:
-            return Response({"error": "Name is required"}, status=400)
+            return Response(
+                {
+                    "error": "Name is required",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         household.name = name
         household.save()
 
-        return Response({
-            "id": household.id,
-            "name": household.name
-        })
+        return Response(
+            {
+                "id": household.id,
+                "name": household.name,
+            },
+            status=status.HTTP_200_OK,
+        )
 
     def put(self, request, pk):
-        return self.patch(request, pk)
+        return self.patch(
+            request,
+            pk,
+        )
 
     def delete(self, request, pk):
-        household = get_object_or_404(Household, pk=pk)
-
-        if not household:
-            return Response(status=204)
-
-        membership = HouseholdMember.objects.filter(
-            household=household,
-            user=request.user
-        ).first()
-
-        # Nur Owner darf löschen
-        if not membership or membership.role != "owner":
-            return Response({"error": "Not allowed"}, status=403)
+        household = self.get_household(pk)
 
         household.delete()
 
-        return Response({"message": "Deleted"}, status=204)
+        return Response(
+            {
+                "message": "Household deleted",
+            },
+            status=status.HTTP_204_NO_CONTENT,
+        )

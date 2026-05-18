@@ -1,113 +1,250 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from bills.models import Bill
-from bills.serializers.bill_serializer import BillSerializer
-from django.shortcuts import get_object_or_404
+from django.shortcuts import (
+    get_object_or_404,
+)
+
 from rest_framework import status
-from households.models import HouseholdMember
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import (
+    MultiPartParser,
+)
+from rest_framework.permissions import (
+    IsAuthenticated,
+)
+from rest_framework.response import (
+    Response,
+)
+from rest_framework.views import (
+    APIView,
+)
 
-from services.extractor import extract_bill
-from rest_framework.parsers import MultiPartParser
+from bills.models import Bill
 
+from bills.serializers.bill_serializer import (
+    BillSerializer,
+)
+
+from common.permissions import (
+    IsHouseholdMember,
+)
+
+from households.models import (
+    Household,
+)
+
+from services.extractor import (
+    extract_bill,
+)
+
+
+# =========================
+# BILL LIST
+# =========================
 
 class BillListView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [
+        IsAuthenticated,
+        IsHouseholdMember,
+    ]
 
     def get(self, request):
-        household_id = request.query_params.get('household')
+        household_id = (
+            request.query_params.get(
+                "household"
+            )
+        )
 
         if not household_id:
-            return Response({"error": "household parameter is required"}, status=400)
+            return Response(
+                {
+                    "error":
+                        "household parameter is required"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         bills = Bill.objects.filter(
-            household_id=household_id, household__householdmember__user=request.user)
+            household_id=household_id,
+            household__householdmember__user=request.user,
+        )
 
-        serializer = BillSerializer(bills, many=True)
-        return Response(serializer.data)
+        serializer = BillSerializer(
+            bills,
+            many=True,
+        )
+
+        return Response(
+            serializer.data,
+        )
 
     def post(self, request):
-        household_id = request.data.get('household')
+        household_id = (
+            request.data.get(
+                "household"
+            )
+        )
 
-        membership = HouseholdMember.objects.filter(
-            household_id=household_id, user=request.user).first()
+        file = request.FILES.get(
+            "file"
+        )
 
-        if not membership:
-            return Response({"error": "not allower"}, status=403)
+        serializer = BillSerializer(
+            data=request.data,
+        )
 
-        file = request.FILES.get("file")
+        serializer.is_valid(
+            raise_exception=True,
+        )
 
-        data = request.data.copy()
+        household = get_object_or_404(
+            Household,
+            pk=household_id,
+        )
 
-        serializer = BillSerializer(data=data)
+        serializer.save(
+            household=household,
+            created_by_user=request.user,
+            file=file,
+        )
 
-        if serializer.is_valid():
-            serializer.save(household=membership.household,
-                            created_by_user=request.user,
-                            file=file)
-            return Response(serializer.data, status=201)
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+        )
 
-        return Response(serializer.errors, status=400)
 
+# =========================
+# BILL DETAIL
+# =========================
 
 class BillDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [
+        IsAuthenticated,
+    ]
 
-    def get_object(self, pk, user):
-        return get_object_or_404(Bill, pk=pk, household__householdmember__user=user)
+    def get_object(
+        self,
+        pk,
+        user,
+    ):
+        return get_object_or_404(
+            Bill,
+            pk=pk,
+            household__householdmember__user=user,
+        )
 
     def get(self, request, pk):
-        bill = self.get_object(pk, request.user)
+        bill = self.get_object(
+            pk,
+            request.user,
+        )
 
-        serializer = BillSerializer(bill)
-        return Response(serializer.data)
+        serializer = BillSerializer(
+            bill,
+        )
+
+        return Response(
+            serializer.data,
+        )
 
     def put(self, request, pk):
-        bill = self.get_object(pk, request.user)
+        bill = self.get_object(
+            pk,
+            request.user,
+        )
 
-        serializer = BillSerializer(bill, data=request.data)
+        serializer = BillSerializer(
+            bill,
+            data=request.data,
+        )
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+        serializer.is_valid(
+            raise_exception=True,
+        )
 
-        return Response(serializer.errors, status=400)
+        serializer.save()
+
+        return Response(
+            serializer.data,
+        )
 
     def patch(self, request, pk):
-        bill = self.get_object(pk, request.user)
-        serializer = BillSerializer(bill, data=request.data, partial=True)
+        bill = self.get_object(
+            pk,
+            request.user,
+        )
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+        serializer = BillSerializer(
+            bill,
+            data=request.data,
+            partial=True,
+        )
 
-        return Response(serializer.errors, status=400)
+        serializer.is_valid(
+            raise_exception=True,
+        )
+
+        serializer.save()
+
+        return Response(
+            serializer.data,
+        )
 
     def delete(self, request, pk):
-        bill = self.get_object(pk, request.user)
-        bill.delete()
-        return Response(status=204)
+        bill = self.get_object(
+            pk,
+            request.user,
+        )
 
+        bill.delete()
+
+        return Response(
+            status=status.HTTP_204_NO_CONTENT,
+        )
+
+
+# =========================
+# EXTRACT BILL
+# =========================
 
 class ExtractBillView(APIView):
-    permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser]
+    permission_classes = [
+        IsAuthenticated,
+    ]
+
+    parser_classes = [
+        MultiPartParser,
+    ]
 
     def post(self, request):
-        file = request.FILES.get("file")
+        file = request.FILES.get(
+            "file"
+        )
 
         if not file:
-            return Response({"error": "No file uploaded "}, status=400)
-
-        print("===== FILE DEBUG =====")
-        print("FILES NAME:", file.name)
-        print("FILES TYPE:", file.content_type)
-        print("FILES SIZE:", file.size)
+            return Response(
+                {
+                    "error":
+                        "No file uploaded"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
             result = extract_bill(file)
-            return Response(result, status=200)
 
-        except Exception as e:
-            print(" ERROR:", str(e))
-            return Response({"error": str(e)}, status=500)
+            return Response(
+                result,
+                status=status.HTTP_200_OK,
+            )
+
+        except Exception as error:
+            print(
+                "ERROR:",
+                str(error),
+            )
+
+            return Response(
+                {
+                    "error": str(error)
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
