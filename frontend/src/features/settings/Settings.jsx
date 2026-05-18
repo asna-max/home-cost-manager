@@ -14,6 +14,12 @@ export default function Settings() {
 
     currency,
     setCurrency,
+
+    emailNotifications,
+    setEmailNotifications,
+
+    billReminders,
+    setBillReminders,
   } = useSettings();
 
   return (
@@ -99,6 +105,25 @@ export default function Settings() {
               value: "USD",
             },
           ]}
+        />
+      </SettingsSection>
+
+      <SettingsSection
+        title="Notifications"
+        description="Manage notification preferences."
+      >
+        <SettingsToggle
+          label="Email Notifications"
+          description="Receive important updates by email."
+          checked={emailNotifications}
+          onChange={setEmailNotifications}
+        />
+
+        <SettingsToggle
+          label="Bill Reminders"
+          description="Receive reminders before bills are due."
+          checked={billReminders}
+          onChange={setBillReminders}
         />
       </SettingsSection>
     </div>

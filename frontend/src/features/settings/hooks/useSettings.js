@@ -14,9 +14,6 @@ export function useSettings() {
     return localStorage.getItem("language") || "en";
   });
 
-  // =========================
-  // SAVE LANGUAGE
-  // =========================
   useEffect(() => {
     localStorage.setItem("language", language);
   }, [language]);
@@ -27,12 +24,28 @@ export function useSettings() {
   const [currency, setCurrency] = useState(() => {
     return localStorage.getItem("currency") || "CHF";
   });
-  // =========================
-  // SAVE CURRENCY
-  // =========================
   useEffect(() => {
     localStorage.setItem("currency", currency);
   }, [currency]);
+
+  // =========================
+  // NOTIFICATIONS
+  // =========================
+  const [emailNotifications, setEmailNotifications] = useState(() => {
+    return localStorage.getItem("email_notifications") === "true";
+  });
+
+  const [billReminders, setBillReminders] = useState(() => {
+    return localStorage.getItem("bill_reminders") === "true";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("email_notifications", emailNotifications);
+  }, [emailNotifications]);
+
+  useEffect(() => {
+    localStorage.setItem("bill_reminders", billReminders);
+  }, [billReminders]);
 
   return {
     darkMode,
@@ -40,7 +53,14 @@ export function useSettings() {
 
     language,
     setLanguage,
+
     currency,
     setCurrency,
+
+    emailNotifications,
+    setEmailNotifications,
+
+    billReminders,
+    setBillReminders,
   };
 }
