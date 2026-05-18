@@ -1,18 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useSettings } from "../../settings/hooks/useSettings";
 import { formatCurrency } from "../../../shared/utils/formatCurrency";
+import { formatDate } from "../../../shared/utils/formatDate";
 
 import AppCard from "../../../shared/components/AppCard";
-
-// =========================
-// FORMAT DATE
-// =========================
-
-function formatDate(date) {
-  if (!date) return "";
-
-  return new Date(date).toLocaleDateString("de-CH");
-}
 
 // =========================
 // FORMAT TYPE
@@ -127,8 +118,8 @@ export default function RecentBills({ bills }) {
                           dark:text-gray-400
                         "
                     >
-                      {formatDate(bill.period_from)} —{" "}
-                      {formatDate(bill.period_to)}
+                      {formatDate(bill.period_from, settings.language)} —{" "}
+                      {formatDate(bill.period_to, settings.language)}
                     </p>
                   )}
                 </div>
