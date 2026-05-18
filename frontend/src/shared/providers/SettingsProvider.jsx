@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-
 import { SettingsContext } from "../context/SettingsContext";
+import { useTheme } from "../hooks/useTheme";
 
 // =========================
 // STORAGE KEY
@@ -27,6 +27,7 @@ const DEFAULT_SETTINGS = {
 };
 
 export default function SettingsProvider({ children }) {
+  const { darkMode, setDarkMode } = useTheme();
   // =========================
   // SETTINGS
   // =========================
@@ -91,14 +92,17 @@ export default function SettingsProvider({ children }) {
   // =========================
 
   const value = {
-    settings,
+    // THEME
+    darkMode,
+    setDarkMode,
 
+    // SETTINGS
+    settings,
     updateSetting,
 
+    // ACTIONS
     saved,
-
     saveSettings,
-
     resetSettings,
   };
 
