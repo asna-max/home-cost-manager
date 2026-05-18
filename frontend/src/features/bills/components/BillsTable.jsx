@@ -1,10 +1,12 @@
 import { FaEye, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
-
 import { API_BASE } from "../../../services/api/axios";
+import { useSettings } from "../../settings/hooks/useSettings";
+import { formatCurrency } from "../../../shared/utils/formatCurrency";
 
 import AppCard from "../../../shared/components/AppCard";
 
 export default function BillsTable({ bills, onDelete, onToggle }) {
+  const { settings } = useSettings();
   // =========================
   // EMPTY
   // =========================
@@ -149,7 +151,7 @@ export default function BillsTable({ bills, onDelete, onToggle }) {
                     dark:text-white
                   "
                 >
-                  CHF {bill.amount}
+                  {formatCurrency(bill.amount, settings.currency)}
                 </td>
 
                 {/* NOTES */}
