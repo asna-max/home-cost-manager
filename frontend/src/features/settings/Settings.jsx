@@ -10,23 +10,8 @@ export default function Settings() {
     darkMode,
     setDarkMode,
 
-    language,
-    setLanguage,
-
-    currency,
-    setCurrency,
-
-    emailNotifications,
-    setEmailNotifications,
-
-    billReminders,
-    setBillReminders,
-
-    username,
-    setUsername,
-
-    email,
-    setEmail,
+    settings,
+    updateSetting,
 
     saved,
     saveSettings,
@@ -82,8 +67,8 @@ export default function Settings() {
         <SettingsSelect
           label="Language"
           description="Select your application language."
-          value={language}
-          onChange={setLanguage}
+          value={settings.language}
+          onChange={(value) => updateSetting("language", value)}
           options={[
             {
               label: "English",
@@ -99,8 +84,8 @@ export default function Settings() {
         <SettingsSelect
           label="Currency"
           description="Select your preferred currency."
-          value={currency}
-          onChange={setCurrency}
+          value={settings.currency}
+          onChange={(value) => updateSetting("currency", value)}
           options={[
             {
               label: "Swiss Franc (CHF)",
@@ -125,15 +110,15 @@ export default function Settings() {
         <SettingsToggle
           label="Email Notifications"
           description="Receive important updates by email."
-          checked={emailNotifications}
-          onChange={setEmailNotifications}
+          checked={settings.emailNotifications}
+          onChange={(value) => updateSetting("emailNotifications", value)}
         />
 
         <SettingsToggle
           label="Bill Reminders"
           description="Receive reminders before bills are due."
-          checked={billReminders}
-          onChange={setBillReminders}
+          checked={settings.billReminders}
+          onChange={(value) => updateSetting("billReminders", value)}
         />
       </SettingsSection>
       <SettingsSection
@@ -143,8 +128,8 @@ export default function Settings() {
         <SettingsInput
           label="Username"
           description="Your public account username."
-          value={username}
-          onChange={setUsername}
+          value={settings.username}
+          onChange={(value) => updateSetting("username", value)}
           placeholder="Enter username"
         />
 
@@ -152,8 +137,8 @@ export default function Settings() {
           label="Email"
           description="Your account email address."
           type="email"
-          value={email}
-          onChange={setEmail}
+          value={settings.email}
+          onChange={(value) => updateSetting("email", value)}
           placeholder="Enter email"
         />
 
