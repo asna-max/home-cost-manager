@@ -15,6 +15,7 @@ export default function Settings() {
 
     saved,
     saveSettings,
+    resetSettings,
   } = useSettings();
 
   return (
@@ -160,8 +161,11 @@ export default function Settings() {
       <div
         className="
     flex
-    items-center
-    justify-between
+    flex-col
+    md:flex-row
+    md:items-center
+    md:justify-between
+    gap-4
     pt-2
   "
       >
@@ -182,9 +186,30 @@ export default function Settings() {
 
         {/* BUTTON */}
 
-        <button
-          onClick={saveSettings}
-          className="
+        <div className="flex gap-3">
+          {/* RESET */}
+
+          <button
+            onClick={resetSettings}
+            className="
+      px-5
+      py-3
+      bg-red-500
+      hover:bg-red-600
+      text-white
+      rounded-xl
+      transition
+      font-medium
+    "
+          >
+            Reset Settings
+          </button>
+
+          {/* SAVE */}
+
+          <button
+            onClick={saveSettings}
+            className="
       px-5
       py-3
       bg-blue-500
@@ -194,9 +219,10 @@ export default function Settings() {
       transition
       font-medium
     "
-        >
-          Save Settings
-        </button>
+          >
+            Save Settings
+          </button>
+        </div>
       </div>
     </div>
   );

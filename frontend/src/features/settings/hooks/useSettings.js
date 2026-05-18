@@ -5,8 +5,20 @@ import { useTheme } from "../../../shared/hooks/useTheme";
 // =========================
 // STORAGE KEY
 // =========================
-
 const SETTINGS_KEY = "homecost_settings";
+const DEFAULT_SETTINGS = {
+  language: "en",
+
+  currency: "CHF",
+
+  emailNotifications: false,
+
+  billReminders: false,
+
+  username: "",
+
+  email: "",
+};
 
 export function useSettings() {
   // =========================
@@ -22,21 +34,7 @@ export function useSettings() {
   const [settings, setSettings] = useState(() => {
     const stored = localStorage.getItem(SETTINGS_KEY);
 
-    return stored
-      ? JSON.parse(stored)
-      : {
-          language: "en",
-
-          currency: "CHF",
-
-          emailNotifications: false,
-
-          billReminders: false,
-
-          username: "",
-
-          email: "",
-        };
+    return stored ? JSON.parse(stored) : DEFAULT_SETTINGS;
   });
 
   // =========================
@@ -76,6 +74,18 @@ export function useSettings() {
     }, 2000);
   };
 
+  // =========================
+  // RESET SETTING
+  // =========================
+
+  const resetSettings = () => {
+    setSettings(DEFAULT_SETTINGS);
+
+    localStorage.removeItem(SETTINGS_KEY);
+
+    setSaved(false);
+  };
+
   return {
     // THEME
     darkMode,
@@ -88,5 +98,6 @@ export function useSettings() {
     // SAVE
     saved,
     saveSettings,
+    resetSettings,
   };
 }
