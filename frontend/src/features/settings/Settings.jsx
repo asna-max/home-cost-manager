@@ -55,7 +55,7 @@ export default function Settings() {
           label="Dark Mode"
           description="Enable dark appearance for the application."
           checked={darkMode}
-          onChange={setDarkMode}
+          onChange={(value) => setDarkMode(value)}
         />
       </SettingsSection>
 
