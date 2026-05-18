@@ -29,30 +29,66 @@ export default function Register() {
 
     setError("");
 
-    // PASSWORD CHECK
+    // =========================
+    // PASSWORD MATCH
+    // =========================
+
     if (password !== confirmPassword) {
       setError("Passwords do not match");
 
       return;
     }
 
+    // =========================
+    // PASSWORD VALIDATION
+    // =========================
+
+    const isPasswordValid = Object.values(validation).every(Boolean);
+
+    if (!isPasswordValid) {
+      setError("Password does not meet requirements");
+      return;
+    }
+
     try {
       setLoading(true);
 
+      // REGISTER REQUEST
       await register({
         username,
         email,
         password,
       });
 
+      // REDIRECT
       navigate("/");
     } catch (err) {
-      setError(err.message || "Registration failed");
+      const data = err.response?.data;
+
+      // USERNAME EXISTS
+      if (data?.username) {
+        setError(data.username[0]);
+        return;
+      }
+
+      // EMAIL EXISTS
+      if (data?.email) {
+        setError(data.email[0]);
+        return;
+      }
+
+      // PASSWORD ERROR
+      if (data?.password) {
+        setError(data.password[0]);
+        return;
+      }
+
+      // FALLBACK
+      setError("Registration failed");
     } finally {
       setLoading(false);
     }
   };
-
   // =========================
   // UI
   // =========================
