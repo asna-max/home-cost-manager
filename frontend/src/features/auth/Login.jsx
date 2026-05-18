@@ -38,12 +38,20 @@ export default function Login({ login }) {
       }
 
       // AUTH LOGIN
-
       login(data.access, data.refresh);
 
       navigate("/dashboard");
     } catch (err) {
-      setError(err.message || "Login failed");
+      const data = err.response?.data;
+
+      // INVALID LOGIN
+      if (data?.detail) {
+        setError("Invalid username or password");
+        return;
+      }
+
+      //FALLBACK
+      setError("Login failed");
     } finally {
       setLoading(false);
     }
