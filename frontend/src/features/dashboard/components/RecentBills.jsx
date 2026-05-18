@@ -136,7 +136,11 @@ export default function RecentBills({ bills }) {
                       dark:text-white
                     "
                   >
-                    {formatCurrency(bill.amount, settings.currency)}
+                    {formatCurrency(
+                      bill.amount,
+                      settings.currency,
+                      settings.language,
+                    )}
                   </p>
 
                   {/* STATUS */}

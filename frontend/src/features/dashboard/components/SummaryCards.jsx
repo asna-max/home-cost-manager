@@ -74,7 +74,7 @@ export default function SummaryCards({ summary }) {
               mt-2
             "
           >
-            {formatCurrency(card.value, settings.currency)}
+            {formatCurrency(card.value, settings.currency, settings.language)}
           </h3>
         </div>
       ))}

@@ -151,7 +151,11 @@ export default function BillsTable({ bills, onDelete, onToggle }) {
                     dark:text-white
                   "
                 >
-                  {formatCurrency(bill.amount, settings.currency)}
+                  {formatCurrency(
+                    bill.amount,
+                    settings.currency,
+                    settings.language,
+                  )}
                 </td>
 
                 {/* NOTES */}

@@ -1,3 +1,9 @@
-export function formatCurrency(amount, currency = "CHF") {
-  return `${currency} ${Number(amount || 0).toFixed(2)}`;
+export function formatCurrency(amount, currency = "CHF", language = "en") {
+  const locale = language === "de" ? "de-CH" : "en-US";
+
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+
+    currency,
+  }).format(amount || 0);
 }
