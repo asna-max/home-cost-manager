@@ -10,7 +10,6 @@ export function useSettings() {
   // =========================
   // LANGUAGE
   // =========================
-
   const [language, setLanguage] = useState(() => {
     return localStorage.getItem("language") || "en";
   });
@@ -18,10 +17,22 @@ export function useSettings() {
   // =========================
   // SAVE LANGUAGE
   // =========================
-
   useEffect(() => {
     localStorage.setItem("language", language);
   }, [language]);
+
+  // =========================
+  // CURRENCY
+  // =========================
+  const [currency, setCurrency] = useState(() => {
+    return localStorage.getItem("currency") || "CHF";
+  });
+  // =========================
+  // SAVE CURRENCY
+  // =========================
+  useEffect(() => {
+    localStorage.setItem("currency", currency);
+  }, [currency]);
 
   return {
     darkMode,
@@ -29,5 +40,7 @@ export function useSettings() {
 
     language,
     setLanguage,
+    currency,
+    setCurrency,
   };
 }

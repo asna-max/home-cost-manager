@@ -5,7 +5,14 @@ import SettingsToggle from "./components/SettingsToggle";
 import SettingsSelect from "./components/SettingsSelect";
 
 export default function Settings() {
-  const { darkMode, setDarkMode, language, setLanguage } = useSettings();
+  const {
+    darkMode,
+    setDarkMode,
+    language,
+    setLanguage,
+    currency,
+    setCurrency,
+  } = useSettings();
 
   return (
     <div className="space-y-8">
@@ -60,6 +67,26 @@ export default function Settings() {
           {
             label: "Deutsch",
             value: "de",
+          },
+        ]}
+      />
+      <SettingsSelect
+        label="Currency"
+        description="Select your preferred currency."
+        value={currency}
+        onChange={setCurrency}
+        options={[
+          {
+            label: "Swiss Franc (CHF)",
+            value: "CHF",
+          },
+          {
+            label: "Euro (EUR)",
+            value: "EUR",
+          },
+          {
+            label: "US Dollar (USD)",
+            value: "USD",
           },
         ]}
       />
