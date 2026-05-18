@@ -27,6 +27,9 @@ export default function Settings() {
 
     email,
     setEmail,
+
+    saved,
+    saveSettings,
   } = useSettings();
 
   return (
@@ -168,6 +171,48 @@ export default function Settings() {
           Change Password
         </button>
       </SettingsSection>
+
+      <div
+        className="
+    flex
+    items-center
+    justify-between
+    pt-2
+  "
+      >
+        {/* FEEDBACK */}
+
+        <div>
+          {saved && (
+            <p
+              className="
+          text-sm
+          text-green-500
+        "
+            >
+              Settings saved successfully.
+            </p>
+          )}
+        </div>
+
+        {/* BUTTON */}
+
+        <button
+          onClick={saveSettings}
+          className="
+      px-5
+      py-3
+      bg-blue-500
+      hover:bg-blue-600
+      text-white
+      rounded-xl
+      transition
+      font-medium
+    "
+        >
+          Save Settings
+        </button>
+      </div>
     </div>
   );
 }

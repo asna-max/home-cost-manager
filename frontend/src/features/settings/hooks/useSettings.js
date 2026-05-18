@@ -65,6 +65,19 @@ export function useSettings() {
     localStorage.setItem("settings_email", email);
   }, [email]);
 
+  // =========================
+  // SAVE SETTINGS
+  // =========================
+  const [saved, setSaved] = useState(false);
+
+  const saveSettings = () => {
+    setSaved(true);
+
+    setTimeout(() => {
+      setSaved(false);
+    }, 2000);
+  };
+
   return {
     darkMode,
     setDarkMode,
@@ -86,5 +99,8 @@ export function useSettings() {
 
     email,
     setEmail,
+
+    saved,
+    saveSettings,
   };
 }
