@@ -47,6 +47,24 @@ export function useSettings() {
     localStorage.setItem("bill_reminders", billReminders);
   }, [billReminders]);
 
+  // =========================
+  // ACCOUNT SETTINGS
+  // =========================
+  const [username, setUsername] = useState(() => {
+    return localStorage.getItem("settings_username") || "";
+  });
+
+  const [email, setEmail] = useState(() => {
+    return localStorage.getItem("settings_email") || "";
+  });
+  useEffect(() => {
+    localStorage.setItem("settings_username", username);
+  }, [username]);
+
+  useEffect(() => {
+    localStorage.setItem("settings_email", email);
+  }, [email]);
+
   return {
     darkMode,
     setDarkMode,
@@ -62,5 +80,11 @@ export function useSettings() {
 
     billReminders,
     setBillReminders,
+
+    username,
+    setUsername,
+
+    email,
+    setEmail,
   };
 }

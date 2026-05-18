@@ -3,6 +3,7 @@ import { useSettings } from "./hooks/useSettings";
 import SettingsSection from "./components/SettingsSection";
 import SettingsToggle from "./components/SettingsToggle";
 import SettingsSelect from "./components/SettingsSelect";
+import SettingsInput from "./components/SettingsInput";
 
 export default function Settings() {
   const {
@@ -20,6 +21,12 @@ export default function Settings() {
 
     billReminders,
     setBillReminders,
+
+    username,
+    setUsername,
+
+    email,
+    setEmail,
   } = useSettings();
 
   return (
@@ -125,6 +132,41 @@ export default function Settings() {
           checked={billReminders}
           onChange={setBillReminders}
         />
+      </SettingsSection>
+      <SettingsSection
+        title="Account"
+        description="Manage your account information."
+      >
+        <SettingsInput
+          label="Username"
+          description="Your public account username."
+          value={username}
+          onChange={setUsername}
+          placeholder="Enter username"
+        />
+
+        <SettingsInput
+          label="Email"
+          description="Your account email address."
+          type="email"
+          value={email}
+          onChange={setEmail}
+          placeholder="Enter email"
+        />
+
+        <button
+          className="
+      px-4
+      py-2
+      bg-blue-500
+      hover:bg-blue-600
+      text-white
+      rounded-xl
+      transition
+    "
+        >
+          Change Password
+        </button>
       </SettingsSection>
     </div>
   );
