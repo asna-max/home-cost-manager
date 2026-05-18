@@ -1,10 +1,10 @@
-import { useTheme } from "../../shared/hooks/useTheme";
+import { useSettings } from "./hooks/useSettings";
 
 import SettingsSection from "./components/SettingsSection";
 import SettingsToggle from "./components/SettingsToggle";
 
 export default function Settings() {
-  const { darkMode, setDarkMode } = useTheme();
+  const { darkMode, setDarkMode } = useSettings();
 
   return (
     <div className="space-y-8">
