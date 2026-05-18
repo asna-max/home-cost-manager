@@ -5,14 +5,17 @@ import App from "./App.jsx";
 import AuthProvider from "./shared/providers/AuthProvider.jsx";
 import HouseholdProvider from "./shared/providers/HouseholdProvider.jsx";
 import ThemeProvider from "./shared/providers/ThemeProvider.jsx";
+import SettingsProvider from "./shared/providers/SettingsProvider";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider>
       <AuthProvider>
-        <HouseholdProvider>
-          <App />
-        </HouseholdProvider>
+        <SettingsProvider>
+          <HouseholdProvider>
+            <App />
+          </HouseholdProvider>
+        </SettingsProvider>
       </AuthProvider>
     </ThemeProvider>
   </StrictMode>,

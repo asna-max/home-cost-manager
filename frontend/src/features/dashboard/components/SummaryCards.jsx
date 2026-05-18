@@ -1,3 +1,6 @@
+import { formatCurrency } from "../../../shared/utils/formatCurrency";
+import { useSettings } from "../../settings/hooks/useSettings";
+
 export default function SummaryCards({ summary }) {
   const cards = [
     {
@@ -30,6 +33,8 @@ export default function SummaryCards({ summary }) {
       color: "bg-orange-400",
     },
   ];
+
+  const { settings } = useSettings();
 
   return (
     <div
@@ -69,7 +74,7 @@ export default function SummaryCards({ summary }) {
               mt-2
             "
           >
-            CHF {Number(card.value || 0).toFixed(2)}
+            {formatCurrency(card.value, settings.currency)}
           </h3>
         </div>
       ))}
