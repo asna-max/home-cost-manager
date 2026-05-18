@@ -8,8 +8,10 @@ export default function Settings() {
   const {
     darkMode,
     setDarkMode,
+
     language,
     setLanguage,
+
     currency,
     setCurrency,
   } = useSettings();
@@ -41,11 +43,11 @@ export default function Settings() {
         </p>
       </div>
 
-      {/* CONTENT */}
+      {/* APPEARANCE */}
 
       <SettingsSection
-        title="General"
-        description="Manage your general application settings."
+        title="Appearance"
+        description="Customize the application appearance."
       >
         <SettingsToggle
           label="Dark Mode"
@@ -54,42 +56,51 @@ export default function Settings() {
           onChange={setDarkMode}
         />
       </SettingsSection>
-      <SettingsSelect
-        label="Language"
-        description="Select your application language."
-        value={language}
-        onChange={setLanguage}
-        options={[
-          {
-            label: "English",
-            value: "en",
-          },
-          {
-            label: "Deutsch",
-            value: "de",
-          },
-        ]}
-      />
-      <SettingsSelect
-        label="Currency"
-        description="Select your preferred currency."
-        value={currency}
-        onChange={setCurrency}
-        options={[
-          {
-            label: "Swiss Franc (CHF)",
-            value: "CHF",
-          },
-          {
-            label: "Euro (EUR)",
-            value: "EUR",
-          },
-          {
-            label: "US Dollar (USD)",
-            value: "USD",
-          },
-        ]}
-      />
+
+      {/* LOCALIZATION */}
+
+      <SettingsSection
+        title="Localization"
+        description="Manage regional application settings."
+      >
+        <SettingsSelect
+          label="Language"
+          description="Select your application language."
+          value={language}
+          onChange={setLanguage}
+          options={[
+            {
+              label: "English",
+              value: "en",
+            },
+            {
+              label: "Deutsch",
+              value: "de",
+            },
+          ]}
+        />
+
+        <SettingsSelect
+          label="Currency"
+          description="Select your preferred currency."
+          value={currency}
+          onChange={setCurrency}
+          options={[
+            {
+              label: "Swiss Franc (CHF)",
+              value: "CHF",
+            },
+            {
+              label: "Euro (EUR)",
+              value: "EUR",
+            },
+            {
+              label: "US Dollar (USD)",
+              value: "USD",
+            },
+          ]}
+        />
+      </SettingsSection>
     </div>
   );
 }
