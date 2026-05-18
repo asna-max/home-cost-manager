@@ -2,9 +2,10 @@ import { useSettings } from "./hooks/useSettings";
 
 import SettingsSection from "./components/SettingsSection";
 import SettingsToggle from "./components/SettingsToggle";
+import SettingsSelect from "./components/SettingsSelect";
 
 export default function Settings() {
-  const { darkMode, setDarkMode } = useSettings();
+  const { darkMode, setDarkMode, language, setLanguage } = useSettings();
 
   return (
     <div className="space-y-8">
@@ -46,6 +47,22 @@ export default function Settings() {
           onChange={setDarkMode}
         />
       </SettingsSection>
+      <SettingsSelect
+        label="Language"
+        description="Select your application language."
+        value={language}
+        onChange={setLanguage}
+        options={[
+          {
+            label: "English",
+            value: "en",
+          },
+          {
+            label: "Deutsch",
+            value: "de",
+          },
+        ]}
+      />
     </div>
   );
 }
