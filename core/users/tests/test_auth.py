@@ -7,6 +7,9 @@ from rest_framework.test import (
 from users.models import User
 
 
+# =========================
+# REGISTER TESTS
+# =========================
 class RegisterTests(
     APITestCase,
 ):
@@ -72,4 +75,69 @@ class RegisterTests(
         self.assertEqual(
             User.objects.count(),
             1,
+        )
+
+
+# =========================
+# LOGIN TESTS
+# =========================
+class LoginTests(
+    APITestCase,
+):
+    def setUp(self):
+        self.user = (
+            User.objects.create_user(
+                username="ashok",
+                email="ashok@test.com",
+                password="Test1234!",
+            )
+        )
+
+    def test_user_can_login(
+        self,
+    ):
+        data = {
+            "username": "ashok",
+            "password": "Test1234!",
+        }
+
+        response = self.client.post(
+            "/api/auth/token/",
+            data,
+        )
+
+        # SUCCESS
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        # TOKENS EXIST
+        self.assertIn(
+            "access",
+            response.data,
+        )
+
+        self.assertIn(
+            "refresh",
+            response.data,
+        )
+
+    def test_invalid_password_fails(
+        self,
+    ):
+        data = {
+            "username": "ashok",
+            "password": "WrongPassword",
+        }
+
+        response = self.client.post(
+            "/api/auth/token/",
+            data,
+        )
+
+        # EXPECT 401
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
         )
