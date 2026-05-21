@@ -1,20 +1,16 @@
 from rest_framework import status
-
-from rest_framework.test import (
-    APITestCase,
-)
-
+from rest_framework.test import (APITestCase)
 from users.models import User
-
-from households.models import (
-    Household,
-    HouseholdMember,
-)
-
+from households.models import (Household, HouseholdMember)
 
 # =========================
 # HOUSEHOLD PERMISSIONS
 # =========================
+#
+# Verify household access
+# permissions and owner rules.
+#
+
 
 class HouseholdPermissionTests(
     APITestCase,

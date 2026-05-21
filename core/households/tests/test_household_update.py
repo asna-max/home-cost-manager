@@ -7,15 +7,11 @@ from households.models import (Household, HouseholdMember)
 # HOUSEHOLD UPDATE
 # =========================
 #
-# Goal:
-# Verify household owners
-# can update household data.
+# Goal: Verify household owners can update household data.
 #
 
 
-class HouseholdUpdateTests(
-    APITestCase,
-):
+class HouseholdUpdateTests( APITestCase):
     def test_owner_can_update_household(
         self,
     ):
