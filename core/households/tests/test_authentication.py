@@ -1,15 +1,17 @@
 from rest_framework import status
-
-from rest_framework.test import (
-    APITestCase,
-)
-
+from rest_framework.test import (APITestCase)
 from users.models import User
-
 
 # =========================
 # HOUSEHOLD AUTHENTICATION
 # =========================
+#
+# Goal:
+# Verify authenticated and
+# unauthenticated access
+# to household endpoints.
+#
+
 
 class HouseholdAuthenticationTests(
     APITestCase,

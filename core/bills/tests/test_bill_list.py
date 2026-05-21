@@ -2,54 +2,60 @@ from rest_framework import status
 from rest_framework.test import (APITestCase)
 from users.models import User
 from households.models import (Household, HouseholdMember)
+from bills.models import Bill
 
 # =========================
-# HOUSEHOLD UPDATE
+# BILL LIST TESTS
 # =========================
 #
 # Goal:
-# Verify household owners
-# can update household data.
+# Verify household members
+# can access household bills.
 #
 
 
-class HouseholdUpdateTests(
+class BillListTests(
     APITestCase,
 ):
-    def test_owner_can_update_household(
+    def test_household_member_can_view_bills(
         self,
     ):
-        # OWNER
-        owner = User.objects.create_user(
-            username="owner",
-            email="owner@test.com",
+        # USER
+        user = User.objects.create_user(
+            username="ashok",
+            email="ashok@test.com",
             password="Test1234!",
         )
 
         # HOUSEHOLD
         household = Household.objects.create(
-            name="Old Name",
-            owner=owner,
+            name="Test Household",
+            owner=user,
         )
 
         # MEMBERSHIP
         HouseholdMember.objects.create(
-            user=owner,
+            user=user,
             household=household,
             role="owner",
         )
 
-        # LOGIN
-        self.client.force_authenticate(
-            user=owner,
+        # BILL
+        Bill.objects.create(
+            household=household,
+            title="Electric Bill",
+            amount=120,
+            created_by_user=user,
         )
 
-        # UPDATE
-        response = self.client.patch(
-            f"/api/households/{household.id}/",
-            {
-                "name": "New Name",
-            },
+        # LOGIN
+        self.client.force_authenticate(
+            user=user,
+        )
+
+        # REQUEST
+        response = self.client.get(
+            f"/api/bills/?household={household.id}",
         )
 
         # EXPECT SUCCESS
@@ -58,11 +64,8 @@ class HouseholdUpdateTests(
             status.HTTP_200_OK,
         )
 
-        # REFRESH DATABASE
-        household.refresh_from_db()
-
-        # CHECK UPDATED
+        # EXPECT 1 BILL
         self.assertEqual(
-            household.name,
-            "New Name",
+            len(response.data),
+            1,
         )
