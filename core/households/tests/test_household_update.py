@@ -13,53 +13,59 @@ from households.models import (
 
 
 # =========================
-# HOUSEHOLD PERMISSIONS
+# HOUSEHOLD UPDATE
 # =========================
 
-class HouseholdPermissionTests(
+class HouseholdUpdateTests(
     APITestCase,
 ):
-    def test_non_member_cannot_access_household(
+    def test_owner_can_update_household(
         self,
     ):
-        # USERS
+        # OWNER
         owner = User.objects.create_user(
             username="owner",
             email="owner@test.com",
             password="Test1234!",
         )
 
-        stranger = User.objects.create_user(
-            username="stranger",
-            email="stranger@test.com",
-            password="Test1234!",
-        )
-
         # HOUSEHOLD
         household = Household.objects.create(
-            name="Test Household",
+            name="Old Name",
             owner=owner,
         )
 
-        # MEMBER
+        # MEMBERSHIP
         HouseholdMember.objects.create(
             user=owner,
             household=household,
             role="owner",
         )
 
-        # LOGIN AS STRANGER
+        # LOGIN
         self.client.force_authenticate(
-            user=stranger,
+            user=owner,
         )
 
-        # REQUEST
-        response = self.client.get(
+        # UPDATE
+        response = self.client.patch(
             f"/api/households/{household.id}/",
+            {
+                "name": "New Name",
+            },
         )
 
-        # EXPECT FORBIDDEN
+        # EXPECT SUCCESS
         self.assertEqual(
             response.status_code,
-            status.HTTP_403_FORBIDDEN,
+            status.HTTP_200_OK,
+        )
+
+        # REFRESH DATABASE
+        household.refresh_from_db()
+
+        # CHECK UPDATED
+        self.assertEqual(
+            household.name,
+            "New Name",
         )
