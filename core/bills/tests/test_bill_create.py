@@ -91,3 +91,60 @@ class BillCreateTests(
             bill.household,
             household,
         )
+
+    def test_create_bill_without_bill_type_fails(self):
+        # USER
+        user = User.objects.create_user(
+            username="ashok",
+            email="ashok@test.com",
+            password="Test1234!",
+        )
+
+        # HOUSEHOLD
+        household = Household.objects.create(
+            name="Test Household",
+            owner=user,
+        )
+
+        # MEMBERSHIP
+        HouseholdMember.objects.create(
+            user=user,
+            household=household,
+            role="owner",
+        )
+
+        # LOGIN
+        self.client.force_authenticate(
+            user=user,
+        )
+
+        # INVALID DATA
+        data = {
+            "title": "Invalid Bill",
+            "amount": "120.50",
+            "household": household.id,
+        }
+
+        # REQUEST
+        response = self.client.post(
+            "/api/bills/",
+            data,
+        )
+
+        # EXPECT BAD REQUEST
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        # VERIFY VALIDATION ERROR
+        self.assertIn(
+            "bill_type",
+            response.data,
+        )
+
+        # VERIFY NOTHING CREATED
+        self.assertEqual(
+            Bill.objects.count(),
+            0,
+        )
