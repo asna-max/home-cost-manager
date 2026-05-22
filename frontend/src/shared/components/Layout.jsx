@@ -4,6 +4,8 @@ import HouseholdSwitcher from "./HouseholdSwitcher";
 import UserMenu from "./UserMenu";
 
 import { useHousehold } from "../hooks/useHousehold";
+import MobileNav from "./MobileNav";
+import MobileHouseholdSwitcher from "./MobileHouseholdSwitcher";
 
 export default function Layout({ children, user, handleLogout }) {
   const location = useLocation();
@@ -46,16 +48,17 @@ export default function Layout({ children, user, handleLogout }) {
 
       <aside
         className="
-          w-60
-          bg-white
-          dark:bg-gray-800
-          border-r
-          border-gray-200
-          dark:border-gray-700
-          shadow-sm
-          flex
-          flex-col
-          justify-between
+            hidden
+            md:flex
+            md:w-60
+            bg-white
+            dark:bg-gray-800
+            border-r
+            border-gray-200
+            dark:border-gray-700
+            shadow-sm
+            md:flex-col
+            md:justify-between
         "
       >
         <div className="p-5">
@@ -134,8 +137,10 @@ export default function Layout({ children, user, handleLogout }) {
             border-b
             border-gray-200
             dark:border-gray-700
-            px-6
-            py-4
+            px-4
+            md:px-6
+            py-3
+            md:py-4
             flex
             justify-between
             items-center
@@ -153,21 +158,40 @@ export default function Layout({ children, user, handleLogout }) {
             {path.replace("/", "") || "dashboard"}
           </h1>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {/* MOBILE SWITCHER */}
+
+            <div className="md:hidden">
+              <MobileHouseholdSwitcher
+                households={households}
+                selectedHousehold={selectedHousehold}
+                setSelectedHousehold={setSelectedHousehold}
+              />
+            </div>
+
+            {/* USER MENU */}
+
             <UserMenu user={user} handleLogout={handleLogout} />
 
-            <HouseholdSwitcher
-              households={households}
-              selectedHousehold={selectedHousehold}
-              setSelectedHousehold={setSelectedHousehold}
-              onCreateHousehold={createHousehold}
-            />
+            {/* DESKTOP SWITCHER */}
+
+            <div className="hidden md:block">
+              <HouseholdSwitcher
+                households={households}
+                selectedHousehold={selectedHousehold}
+                setSelectedHousehold={setSelectedHousehold}
+                onCreateHousehold={createHousehold}
+              />
+            </div>
           </div>
         </header>
 
         {/* CONTENT */}
 
-        <main className="p-6 overflow-auto flex-1">{children}</main>
+        <main className="p-4 md:p-6 pb-24 md:pb-6 overflow-auto flex-1">
+          {children}
+        </main>
+        <MobileNav navItems={navItems} path={path} />
       </div>
     </div>
   );
