@@ -8,6 +8,7 @@ import { getYears, filterBills } from "./utils/billsUtils";
 
 import BillsFilters from "./components/BillFilters";
 import BillsTable from "./components/BillsTable";
+import BillsMobileCards from "./components/BillsMobileCards";
 
 export default function Bills() {
   const { selectedHousehold } = useHousehold();
@@ -73,11 +74,25 @@ export default function Bills() {
 
       {/* TABLE */}
 
-      <BillsTable
-        bills={filtered}
-        onDelete={removeBill}
-        onToggle={toggleStatus}
-      />
+      {/* MOBILE */}
+
+      <div className="md:hidden">
+        <BillsMobileCards
+          bills={filtered}
+          onDelete={removeBill}
+          onToggle={toggleStatus}
+        />
+      </div>
+
+      {/* DESKTOP */}
+
+      <div className="hidden md:block">
+        <BillsTable
+          bills={filtered}
+          onDelete={removeBill}
+          onToggle={toggleStatus}
+        />
+      </div>
     </div>
   );
 }

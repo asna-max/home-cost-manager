@@ -4,6 +4,8 @@ export default function BillsFilters({ filters, setFilters, years }) {
   // =========================
 
   const selectClass = `
+    w-full
+    md:w-auto
     px-3
     py-2
     border
@@ -25,7 +27,9 @@ export default function BillsFilters({ filters, setFilters, years }) {
     <div
       className="
         flex
-        flex-wrap
+        flex-col
+        md:flex-row
+        md:flex-wrap
         gap-3
         mb-5
       "
@@ -104,6 +108,8 @@ export default function BillsFilters({ filters, setFilters, years }) {
           })
         }
         className="
+          w-full
+          md:w-auto
           bg-blue-500
           hover:bg-blue-600
           text-white
