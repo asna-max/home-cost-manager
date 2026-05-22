@@ -98,3 +98,56 @@ class BillListTests(APITestCase):
             response.status_code,
             status.HTTP_403_FORBIDDEN,
         )
+
+    def test_non_member_cannot_create_bill(self):
+        # OWNER
+        owner = User.objects.create_user(
+            username="owner",
+            email="owner@test.com",
+            password="Test1234!",
+        )
+
+        # STRANGER
+        stranger = User.objects.create_user(
+            username="stranger",
+            email="stranger@test.com",
+            password="Test1234!",
+        )
+
+        # HOUSEHOLD
+        household = Household.objects.create(
+            name="Private Household",
+            owner=owner,
+        )
+
+        # MEMBERSHIP
+        HouseholdMember.objects.create(
+            user=owner,
+            household=household,
+            role="owner",
+        )
+
+        # LOGIN AS STRANGER
+        self.client.force_authenticate(
+            user=stranger,
+        )
+
+        # REQUEST DATA
+        data = {
+            "title": "Hacked Bill",
+            "bill_type": "electricity",
+            "amount": "99.99",
+            "household": household.id,
+        }
+
+        # REQUEST
+        response = self.client.post(
+            "/api/bills/",
+            data,
+        )
+
+        # EXPECT FORBIDDEN
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
