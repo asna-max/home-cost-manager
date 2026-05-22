@@ -10,6 +10,9 @@ from users.models import User
 # =========================
 # REGISTER TESTS
 # =========================
+#
+# Goal: Verify user registration and registration validation.
+#
 class RegisterTests(
     APITestCase,
 ):
@@ -81,6 +84,9 @@ class RegisterTests(
 # =========================
 # LOGIN TESTS
 # =========================
+#
+# Goal: Verify JWT login and authentication errors.
+#
 class LoginTests(
     APITestCase,
 ):
