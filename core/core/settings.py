@@ -36,6 +36,7 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
+    "10.145.21.57",
 ]
 
 
@@ -169,6 +170,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # =========================
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://10.145.21.57:5173",
 ]
 
 
