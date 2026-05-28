@@ -12,4 +12,25 @@ db.sqlite3
 .vscode/
 
 # Env
+.env
 .envs
+
+# Node
+node_modules/
+
+# Build
+dist/
+build/
+
+# Media / Uploads
+core/media/
+
+# Images & PDFs
+*.pdf
+*.png
+*.jpg
+*.jpeg
+
+# OS
+.DS_Store
+Thumbs.db

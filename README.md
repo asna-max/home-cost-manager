@@ -92,7 +92,7 @@ source venv/bin/activate
 ### 4. Abhängigkeiten installieren
 
 ```bash
-pip install -r requirements.txt
+pip install -r ../requirements.txt
 ```
 
 ### 5. .env Datei erstellen
