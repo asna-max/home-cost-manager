@@ -169,9 +169,12 @@ export default function BillsTable({ bills, onDelete, onToggle }) {
                     px-4
                     py-3
                     text-center
+                    truncate
+                    max-w-[150px]
                     text-gray-700
                     dark:text-gray-300
                   "
+                  title={bill.notes}
                 >
                   {bill.notes || "-"}
                 </td>
