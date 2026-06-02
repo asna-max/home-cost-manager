@@ -1,4 +1,5 @@
 import ImageUpload from "./ImageUpload";
+import { validateRooms, validateYear } from "../utils/homeValidation";
 
 export default function HomeForm({
   formData,
@@ -104,12 +105,12 @@ export default function HomeForm({
     "
         >
           {/* HOUSE NAME */}
-
           <div className="md:col-span-2">
             <label className={labelClass}>House Name</label>
 
             <input
               className={inputClass}
+              maxLength={40}
               value={formData.household_name}
               onChange={(e) => handleChange("household_name", e.target.value)}
             />
@@ -140,44 +141,29 @@ export default function HomeForm({
               type="number"
               step="0.5"
               min="0.5"
+              max="50"
               value={formData.number_of_rooms}
               onChange={(e) => {
                 const value =
                   e.target.value === "" ? "" : e.target.valueAsNumber;
-
                 handleChange("number_of_rooms", value);
-
-                const num = Number(value);
-
-                let error = "";
-
-                if (Number.isNaN(num)) {
-                  error = "Please enter a valid number";
-                } else if (num <= 0) {
-                  error = "Rooms must be greater than 0";
-                } else if (!Number.isInteger(num) && num % 1 !== 0.5) {
-                  error = "Only whole numbers or .5 values are allowed";
-                }
 
                 setErrors({
                   ...errors,
-                  rooms: error,
+                  rooms: validateRooms(value),
                 });
               }}
-              className={`
-    ${inputClass}
-    ${errors.rooms ? "border-red-500" : ""}
-  `}
+              className={` ${inputClass} ${errors.rooms ? "border-red-500" : ""}`}
             />
           </div>
 
           {/* CITY */}
-
           <div>
             <label className={labelClass}>City</label>
 
             <input
               className={inputClass}
+              maxLength={40}
               value={formData.city}
               onChange={(e) => handleChange("city", e.target.value)}
             />
@@ -190,11 +176,20 @@ export default function HomeForm({
 
             <input
               type="number"
-              className={inputClass}
+              min="1800"
+              max={new Date().getFullYear()}
+              className={`${inputClass} ${errors.yearBuilt ? "border-red-500" : ""}`}
               value={formData.year_built}
-              onChange={(e) =>
-                handleChange("year_built", e.target.valueAsNumber)
-              }
+              onChange={(e) => {
+                const value = e.target.valueAsNumber;
+
+                handleChange("year_built", value);
+
+                setErrors({
+                  ...errors,
+                  yearBuilt: validateYear(value, "Year Built"),
+                });
+              }}
             />
           </div>
 
@@ -248,30 +243,28 @@ export default function HomeForm({
 
           <div>
             <label className={labelClass}>Heating Install Year</label>
-
             <input
               type="number"
-              className={inputClass}
+              min="1800"
+              max={new Date().getFullYear()}
+              className={`${inputClass} ${errors.heatingYear ? "border-red-500" : ""}`}
               value={formData.heating_installation_year}
-              onChange={(e) =>
-                handleChange(
-                  "heating_installation_year",
-                  e.target.valueAsNumber,
-                )
-              }
+              onChange={(e) => {
+                const value = e.target.valueAsNumber;
+
+                handleChange("heating_installation_year", value);
+
+                setErrors({
+                  ...errors,
+                  heatingYear: validateYear(value, "Heating Install Year"),
+                });
+              }}
             />
           </div>
 
           {/* FLOOR HEATING */}
 
-          <div
-            className="
-          flex
-          items-center
-          gap-2
-          mt-7
-        "
-          >
+          <div className="flex items-center gap-2 mt-7">
             <input
               type="checkbox"
               className="
@@ -288,13 +281,7 @@ export default function HomeForm({
               onChange={(e) => handleChange("floor_heating", e.target.checked)}
             />
 
-            <label
-              className="
-            text-sm
-            text-gray-700
-            dark:text-gray-300
-          "
-            >
+            <label className="text-sm text-gray-700 dark:text-gray-300">
               Floor Heating
             </label>
           </div>
@@ -343,11 +330,20 @@ export default function HomeForm({
 
             <input
               type="number"
-              className={inputClass}
+              min="1800"
+              max={new Date().getFullYear()}
+              className={`${inputClass} ${errors.solarYear ? "border-red-500" : ""}`}
               value={formData.solar_installation_year}
-              onChange={(e) =>
-                handleChange("solar_installation_year", e.target.valueAsNumber)
-              }
+              onChange={(e) => {
+                const value = e.target.valueAsNumber;
+
+                handleChange("solar_installation_year", value);
+
+                setErrors({
+                  ...errors,
+                  solarYear: validateYear(value, "Solar Install Year"),
+                });
+              }}
             />
           </div>
 

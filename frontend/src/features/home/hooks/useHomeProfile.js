@@ -6,7 +6,7 @@ import {
   getHouseholds,
 } from "../../../services/householdService";
 import { buildFormData } from "../../../services/api/formUtils";
-import { validateRooms } from "../utils/homeValidation";
+import { validateRooms, validateYear } from "../utils/homeValidation";
 
 export function useHomeProfile(
   selectedHousehold,
@@ -18,7 +18,12 @@ export function useHomeProfile(
   const [saving, setSaving] = useState(false);
   const [preview, setPreview] = useState(null);
   const [originalData, setOriginalData] = useState(null);
-  const [errors, setErrors] = useState({ rooms: "" });
+  const [errors, setErrors] = useState({
+    rooms: "",
+    yearBuilt: "",
+    heatingYear: "",
+    solarYear: "",
+  });
 
   const [formData, setFormData] = useState({
     household_name: "",
@@ -67,7 +72,12 @@ export function useHomeProfile(
         setFormData(mapped);
         setOriginalData(mapped);
         setPreview(mapped.house_image_url);
-        setErrors({ rooms: "" });
+        setErrors({
+          rooms: "",
+          yearBuilt: "",
+          heatingYear: "",
+          solarYear: "",
+        });
       } catch (err) {
         console.error("Load profile error:", err);
       }
@@ -101,7 +111,12 @@ export function useHomeProfile(
 
     setFormData(originalData);
     setPreview(originalData.house_image_url || null);
-    setErrors({ rooms: "" });
+    setErrors({
+      rooms: "",
+      yearBuilt: "",
+      heatingYear: "",
+      solarYear: "",
+    });
   };
 
   // =========================
@@ -126,12 +141,44 @@ export function useHomeProfile(
       newErrors.rooms = roomError;
     }
 
+    // =========================
+    // VALIDATE YEARS
+    // =========================
+    const yearBuiltError = validateYear(formData.year_built, "Year Built");
+
+    if (yearBuiltError) {
+      newErrors.yearBuilt = yearBuiltError;
+    }
+
+    const heatingYearError = validateYear(
+      formData.heating_installation_year,
+      "Heating Install Year",
+    );
+
+    if (heatingYearError) {
+      newErrors.heatingYear = heatingYearError;
+    }
+
+    const solarYearError = validateYear(
+      formData.solar_installation_year,
+      "Solar Install Year",
+    );
+
+    if (solarYearError) {
+      newErrors.solarYear = solarYearError;
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    setErrors({});
+    setErrors({
+      rooms: "",
+      yearBuilt: "",
+      heatingYear: "",
+      solarYear: "",
+    });
 
     setSaving(true);
 
