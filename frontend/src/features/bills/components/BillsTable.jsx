@@ -54,21 +54,21 @@ export default function BillsTable({ bills, onDelete, onToggle }) {
             <tr>
               <th className="px-4 py-3 text-left">Type</th>
 
-              <th className="px-4 py-3">From</th>
+              <th className="px-4 py-3 text-center">From</th>
 
-              <th className="px-4 py-3">To</th>
+              <th className="px-4 py-3 text-center">To</th>
 
-              <th className="px-4 py-3">Due</th>
+              <th className="px-4 py-3 text-center">Due</th>
 
-              <th className="px-4 py-3">Amount</th>
+              <th className="px-4 py-3 text-center">Amount</th>
 
-              <th className="px-4 py-3">Notes</th>
+              <th className="px-4 py-3 text-center">Notes</th>
 
-              <th className="px-4 py-3">View</th>
+              <th className="w-16 px-4 py-3 text-center">View</th>
 
-              <th className="px-4 py-3">Status</th>
+              <th className="w-20 px-4 py-3 text-center">Status</th>
 
-              <th className="px-4 py-3">Delete</th>
+              <th className="w-20 px-4 py-3 text-center">Delete</th>
             </tr>
           </thead>
 
@@ -107,6 +107,7 @@ export default function BillsTable({ bills, onDelete, onToggle }) {
                   className="
                     px-4
                     py-3
+                    text-center
                     text-gray-700
                     dark:text-gray-300
                   "
@@ -120,6 +121,7 @@ export default function BillsTable({ bills, onDelete, onToggle }) {
                   className="
                     px-4
                     py-3
+                    text-center
                     text-gray-700
                     dark:text-gray-300
                   "
@@ -133,6 +135,7 @@ export default function BillsTable({ bills, onDelete, onToggle }) {
                   className="
                     px-4
                     py-3
+                    text-center
                     text-gray-700
                     dark:text-gray-300
                   "
@@ -146,6 +149,7 @@ export default function BillsTable({ bills, onDelete, onToggle }) {
                   className="
                     px-4
                     py-3
+                    text-center
                     font-medium
                     text-gray-800
                     dark:text-white
@@ -164,6 +168,7 @@ export default function BillsTable({ bills, onDelete, onToggle }) {
                   className="
                     px-4
                     py-3
+                    text-center
                     text-gray-700
                     dark:text-gray-300
                   "
@@ -190,6 +195,7 @@ export default function BillsTable({ bills, onDelete, onToggle }) {
                   ) : (
                     <span
                       className="
+                      
                         text-gray-400
                         dark:text-gray-500
                       "
