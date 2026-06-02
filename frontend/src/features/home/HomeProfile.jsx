@@ -87,11 +87,10 @@ export default function HomeProfile() {
 
         {/* FORM */}
 
-        <HomeForm {...state} />
+        <HomeForm {...state} {...state} isOwner={isOwner} />
 
         {/* ACTIONS */}
-
-        <HomeActions {...state} isOwner={isOwner} />
+        {isOwner && <HomeActions {...state} isOwner={isOwner} />}
       </AppCard>
     </div>
   );

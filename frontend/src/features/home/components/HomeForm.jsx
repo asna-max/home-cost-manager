@@ -7,6 +7,7 @@ export default function HomeForm({
   setPreview,
   errors,
   setErrors,
+  isOwner,
 }) {
   // =========================
   // HANDLE CHANGE
@@ -52,14 +53,7 @@ export default function HomeForm({
   `;
 
   return (
-    <div
-      className="
-        grid
-        grid-cols-1
-        md:grid-cols-2
-        gap-5
-      "
-    >
+    <>
       {Object.keys(errors).some((key) => errors[key]) && (
         <div
           className="
@@ -82,172 +76,205 @@ export default function HomeForm({
           </ul>
         </div>
       )}
-      {/* HOUSE NAME */}
 
-      <div className="md:col-span-2">
-        <label className={labelClass}>House Name</label>
-
-        <input
-          className={inputClass}
-          value={formData.household_name}
-          onChange={(e) => handleChange("household_name", e.target.value)}
-        />
-      </div>
-
-      {/* PROPERTY TYPE */}
-
-      <div>
-        <label className={labelClass}>Property Type</label>
-
-        <select
-          className={inputClass}
-          value={formData.property_type}
-          onChange={(e) => handleChange("property_type", e.target.value)}
+      {!isOwner && (
+        <div
+          className="
+      md:col-span-2
+      rounded-lg
+      border
+      border-yellow-300
+      bg-yellow-50
+      px-4
+      py-3
+      text-yellow-800
+    "
         >
-          <option value="rent">Rent</option>
+          You are a household member. Only the household owner can edit the home
+          profile.
+        </div>
+      )}
+      <fieldset disabled={!isOwner} className={!isOwner ? "opacity-75" : ""}>
+        <div
+          className="
+      grid
+      grid-cols-1
+      md:grid-cols-2
+      gap-5
+    "
+        >
+          {/* HOUSE NAME */}
 
-          <option value="owner">Owner</option>
-        </select>
-      </div>
+          <div className="md:col-span-2">
+            <label className={labelClass}>House Name</label>
 
-      {/* ROOMS */}
+            <input
+              className={inputClass}
+              value={formData.household_name}
+              onChange={(e) => handleChange("household_name", e.target.value)}
+            />
+          </div>
 
-      <div>
-        <label className={labelClass}>Rooms</label>
+          {/* PROPERTY TYPE */}
 
-        <input
-          type="number"
-          step="0.5"
-          min="0.5"
-          value={formData.number_of_rooms}
-          onChange={(e) => {
-            const value = e.target.value === "" ? "" : e.target.valueAsNumber;
+          <div>
+            <label className={labelClass}>Property Type</label>
 
-            handleChange("number_of_rooms", value);
+            <select
+              className={inputClass}
+              value={formData.property_type}
+              onChange={(e) => handleChange("property_type", e.target.value)}
+            >
+              <option value="rent">Rent</option>
 
-            const num = Number(value);
+              <option value="owner">Owner</option>
+            </select>
+          </div>
 
-            let error = "";
+          {/* ROOMS */}
 
-            if (Number.isNaN(num)) {
-              error = "Please enter a valid number";
-            } else if (num <= 0) {
-              error = "Rooms must be greater than 0";
-            } else if (!Number.isInteger(num) && num % 1 !== 0.5) {
-              error = "Only whole numbers or .5 values are allowed";
-            }
+          <div>
+            <label className={labelClass}>Rooms</label>
 
-            setErrors({
-              ...errors,
-              rooms: error,
-            });
-          }}
-          className={`
+            <input
+              type="number"
+              step="0.5"
+              min="0.5"
+              value={formData.number_of_rooms}
+              onChange={(e) => {
+                const value =
+                  e.target.value === "" ? "" : e.target.valueAsNumber;
+
+                handleChange("number_of_rooms", value);
+
+                const num = Number(value);
+
+                let error = "";
+
+                if (Number.isNaN(num)) {
+                  error = "Please enter a valid number";
+                } else if (num <= 0) {
+                  error = "Rooms must be greater than 0";
+                } else if (!Number.isInteger(num) && num % 1 !== 0.5) {
+                  error = "Only whole numbers or .5 values are allowed";
+                }
+
+                setErrors({
+                  ...errors,
+                  rooms: error,
+                });
+              }}
+              className={`
     ${inputClass}
     ${errors.rooms ? "border-red-500" : ""}
   `}
-        />
-      </div>
+            />
+          </div>
 
-      {/* CITY */}
+          {/* CITY */}
 
-      <div>
-        <label className={labelClass}>City</label>
+          <div>
+            <label className={labelClass}>City</label>
 
-        <input
-          className={inputClass}
-          value={formData.city}
-          onChange={(e) => handleChange("city", e.target.value)}
-        />
-      </div>
+            <input
+              className={inputClass}
+              value={formData.city}
+              onChange={(e) => handleChange("city", e.target.value)}
+            />
+          </div>
 
-      {/* YEAR BUILT */}
+          {/* YEAR BUILT */}
 
-      <div>
-        <label className={labelClass}>Year Built</label>
+          <div>
+            <label className={labelClass}>Year Built</label>
 
-        <input
-          type="number"
-          className={inputClass}
-          value={formData.year_built}
-          onChange={(e) => handleChange("year_built", e.target.valueAsNumber)}
-        />
-      </div>
+            <input
+              type="number"
+              className={inputClass}
+              value={formData.year_built}
+              onChange={(e) =>
+                handleChange("year_built", e.target.valueAsNumber)
+              }
+            />
+          </div>
 
-      {/* BUILDING TYPE */}
+          {/* BUILDING TYPE */}
 
-      <div>
-        <label className={labelClass}>Building Type</label>
+          <div>
+            <label className={labelClass}>Building Type</label>
 
-        <select
-          className={inputClass}
-          value={formData.building_type}
-          onChange={(e) => handleChange("building_type", e.target.value)}
-        >
-          <option value="">Select</option>
+            <select
+              className={inputClass}
+              value={formData.building_type}
+              onChange={(e) => handleChange("building_type", e.target.value)}
+            >
+              <option value="">Select</option>
 
-          <option value="brick">Brick</option>
+              <option value="brick">Brick</option>
 
-          <option value="wood">Wood</option>
+              <option value="wood">Wood</option>
 
-          <option value="concrete">Concrete</option>
+              <option value="concrete">Concrete</option>
 
-          <option value="mixed">Mixed</option>
-        </select>
-      </div>
+              <option value="mixed">Mixed</option>
+            </select>
+          </div>
 
-      {/* HEATING TYPE */}
+          {/* HEATING TYPE */}
 
-      <div>
-        <label className={labelClass}>Heating Type</label>
+          <div>
+            <label className={labelClass}>Heating Type</label>
 
-        <select
-          className={inputClass}
-          value={formData.heating_type}
-          onChange={(e) => handleChange("heating_type", e.target.value)}
-        >
-          <option value="">Select</option>
+            <select
+              className={inputClass}
+              value={formData.heating_type}
+              onChange={(e) => handleChange("heating_type", e.target.value)}
+            >
+              <option value="">Select</option>
 
-          <option value="gas">Gas</option>
+              <option value="gas">Gas</option>
 
-          <option value="oil">Oil</option>
+              <option value="oil">Oil</option>
 
-          <option value="electric">Electric</option>
+              <option value="electric">Electric</option>
 
-          <option value="heat_pump">Heat Pump</option>
+              <option value="heat_pump">Heat Pump</option>
 
-          <option value="wood">Wood</option>
-        </select>
-      </div>
+              <option value="wood">Wood</option>
+            </select>
+          </div>
 
-      {/* HEATING INSTALL YEAR */}
+          {/* HEATING INSTALL YEAR */}
 
-      <div>
-        <label className={labelClass}>Heating Install Year</label>
+          <div>
+            <label className={labelClass}>Heating Install Year</label>
 
-        <input
-          type="number"
-          className={inputClass}
-          value={formData.heating_installation_year}
-          onChange={(e) =>
-            handleChange("heating_installation_year", e.target.valueAsNumber)
-          }
-        />
-      </div>
+            <input
+              type="number"
+              className={inputClass}
+              value={formData.heating_installation_year}
+              onChange={(e) =>
+                handleChange(
+                  "heating_installation_year",
+                  e.target.valueAsNumber,
+                )
+              }
+            />
+          </div>
 
-      {/* FLOOR HEATING */}
+          {/* FLOOR HEATING */}
 
-      <div
-        className="
+          <div
+            className="
           flex
           items-center
           gap-2
           mt-7
         "
-      >
-        <input
-          type="checkbox"
-          className="
+          >
+            <input
+              type="checkbox"
+              className="
             w-4
             h-4
             rounded
@@ -257,34 +284,34 @@ export default function HomeForm({
             focus:ring-blue-500
             dark:bg-gray-800
           "
-          checked={formData.floor_heating}
-          onChange={(e) => handleChange("floor_heating", e.target.checked)}
-        />
+              checked={formData.floor_heating}
+              onChange={(e) => handleChange("floor_heating", e.target.checked)}
+            />
 
-        <label
-          className="
+            <label
+              className="
             text-sm
             text-gray-700
             dark:text-gray-300
           "
-        >
-          Floor Heating
-        </label>
-      </div>
+            >
+              Floor Heating
+            </label>
+          </div>
 
-      {/* SOLAR PANELS */}
+          {/* SOLAR PANELS */}
 
-      <div
-        className="
+          <div
+            className="
           flex
           items-center
           gap-2
           mt-7
         "
-      >
-        <input
-          type="checkbox"
-          className="
+          >
+            <input
+              type="checkbox"
+              className="
             w-4
             h-4
             rounded
@@ -294,46 +321,48 @@ export default function HomeForm({
             focus:ring-blue-500
             dark:bg-gray-800
           "
-          checked={formData.solar_panels}
-          onChange={(e) => handleChange("solar_panels", e.target.checked)}
-        />
+              checked={formData.solar_panels}
+              onChange={(e) => handleChange("solar_panels", e.target.checked)}
+            />
 
-        <label
-          className="
+            <label
+              className="
             text-sm
             text-gray-700
             dark:text-gray-300
           "
-        >
-          Solar Panels
-        </label>
-      </div>
+            >
+              Solar Panels
+            </label>
+          </div>
 
-      {/* SOLAR INSTALL YEAR */}
+          {/* SOLAR INSTALL YEAR */}
 
-      <div className="md:col-span-2">
-        <label className={labelClass}>Solar Install Year</label>
+          <div className="md:col-span-2">
+            <label className={labelClass}>Solar Install Year</label>
 
-        <input
-          type="number"
-          className={inputClass}
-          value={formData.solar_installation_year}
-          onChange={(e) =>
-            handleChange("solar_installation_year", e.target.valueAsNumber)
-          }
-        />
-      </div>
+            <input
+              type="number"
+              className={inputClass}
+              value={formData.solar_installation_year}
+              onChange={(e) =>
+                handleChange("solar_installation_year", e.target.valueAsNumber)
+              }
+            />
+          </div>
 
-      {/* IMAGE */}
+          {/* IMAGE */}
 
-      <div className="md:col-span-2">
-        <ImageUpload
-          preview={preview}
-          setPreview={setPreview}
-          formData={formData}
-          setFormData={setFormData}
-        />
-      </div>
-    </div>
+          <div className="md:col-span-2">
+            <ImageUpload
+              preview={preview}
+              setPreview={setPreview}
+              formData={formData}
+              setFormData={setFormData}
+            />
+          </div>
+        </div>
+      </fieldset>
+    </>
   );
 }
