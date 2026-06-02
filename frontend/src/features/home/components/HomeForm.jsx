@@ -5,6 +5,8 @@ export default function HomeForm({
   setFormData,
   preview,
   setPreview,
+  errors,
+  setErrors,
 }) {
   // =========================
   // HANDLE CHANGE
@@ -58,6 +60,28 @@ export default function HomeForm({
         gap-5
       "
     >
+      {Object.keys(errors).some((key) => errors[key]) && (
+        <div
+          className="
+      md:col-span-2
+      rounded-lg
+      border
+      border-red-300
+      bg-red-50
+      px-4
+      py-3
+      text-red-700
+    "
+        >
+          <p className="font-medium mb-1">Please fix the following errors:</p>
+
+          <ul className="list-disc ml-5 text-sm">
+            {Object.entries(errors).map(
+              ([key, error]) => error && <li key={key}>{error}</li>,
+            )}
+          </ul>
+        </div>
+      )}
       {/* HOUSE NAME */}
 
       <div className="md:col-span-2">
@@ -93,11 +117,35 @@ export default function HomeForm({
 
         <input
           type="number"
-          className={inputClass}
+          step="0.5"
+          min="0.5"
           value={formData.number_of_rooms}
-          onChange={(e) =>
-            handleChange("number_of_rooms", e.target.valueAsNumber)
-          }
+          onChange={(e) => {
+            const value = e.target.value === "" ? "" : e.target.valueAsNumber;
+
+            handleChange("number_of_rooms", value);
+
+            const num = Number(value);
+
+            let error = "";
+
+            if (Number.isNaN(num)) {
+              error = "Please enter a valid number";
+            } else if (num <= 0) {
+              error = "Rooms must be greater than 0";
+            } else if (!Number.isInteger(num) && num % 1 !== 0.5) {
+              error = "Only whole numbers or .5 values are allowed";
+            }
+
+            setErrors({
+              ...errors,
+              rooms: error,
+            });
+          }}
+          className={`
+    ${inputClass}
+    ${errors.rooms ? "border-red-500" : ""}
+  `}
         />
       </div>
 

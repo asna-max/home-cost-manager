@@ -5,7 +5,9 @@ export default function HomeActions({
   cancel,
   save,
   remove,
+  errors,
 }) {
+  const hasErrors = Object.values(errors).some((error) => error);
   return (
     <div className="flex justify-between items-center mt-6">
       {/* LEFT */}
@@ -32,7 +34,8 @@ export default function HomeActions({
 
         <button
           onClick={save}
-          disabled={!isDirty || saving}
+          disabled={!isDirty || saving || hasErrors}
+          title={hasErrors ? "Please fix validation errors first" : ""}
           className="px-5 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
         >
           {saving ? "Saving..." : "Save"}
