@@ -85,7 +85,10 @@ class HomeProfile(models.Model):
     building_type = models.CharField(
         max_length=10, choices=BUILDING_TYPE_CHOICES)
 
-    number_of_rooms = models.IntegerField()
+    number_of_rooms = models.DecimalField(
+        max_digits=3,
+        decimal_places=1
+    )
 
     city = models.CharField(max_length=255)
 
