@@ -9,6 +9,11 @@ export function useUploadBill() {
   const [step, setStep] = useState("select");
 
   const [formData, setFormData] = useState({});
+  const [errors, setErrors] = useState({
+    amount: "",
+    consumption: "",
+    notes: "",
+  });
 
   const processFile = async (selectedFile, billType) => {
     if (!selectedFile) return;
@@ -40,5 +45,7 @@ export function useUploadBill() {
     setFormData,
     setStep,
     processFile,
+    errors,
+    setErrors,
   };
 }

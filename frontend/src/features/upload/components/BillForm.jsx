@@ -1,8 +1,18 @@
 import AppCard from "../../../shared/components/AppCard";
-
 import { getUnit } from "../utils/uploadUtils";
+import {
+  validateAmount,
+  validateConsumption,
+  validateNotes,
+} from "../utils/billValidation";
 
-export default function BillForm({ formData, setFormData, billType }) {
+export default function BillForm({
+  formData,
+  setFormData,
+  errors,
+  setErrors,
+  billType,
+}) {
   // =========================
   // UPDATE
   // =========================
@@ -45,6 +55,28 @@ export default function BillForm({ formData, setFormData, billType }) {
 
   return (
     <AppCard className="max-w-2xl mx-auto">
+      {Object.values(errors).some(Boolean) && (
+        <div
+          className="
+      mb-4
+      rounded-lg
+      border
+      border-red-300
+      bg-red-50
+      px-4
+      py-3
+      text-red-700
+    "
+        >
+          <p className="font-medium mb-1">Please fix the following errors:</p>
+
+          <ul className="list-disc ml-5 text-sm">
+            {Object.entries(errors).map(
+              ([key, error]) => error && <li key={key}>{error}</li>,
+            )}
+          </ul>
+        </div>
+      )}
       <div
         className="
           grid
@@ -100,9 +132,19 @@ export default function BillForm({ formData, setFormData, billType }) {
               "
             >
               <input
-                className={input}
+                type="number"
+                min="0"
+                max="1000000"
+                className={`${input} ${errors?.consumption ? "border-red-500" : ""}`}
                 value={formData.consumption}
-                onChange={(e) => update("consumption", e.target.value)}
+                onChange={(e) => {
+                  update("consumption", e.target.value);
+
+                  setErrors({
+                    ...errors,
+                    consumption: validateConsumption(e.target.value),
+                  });
+                }}
               />
 
               <span
@@ -144,9 +186,20 @@ export default function BillForm({ formData, setFormData, billType }) {
             "
           >
             <input
-              className={input}
+              type="number"
+              step="0.01"
+              min="0"
+              max="1000000"
+              className={`${input} ${errors?.amount ? "border-red-500" : ""}`}
               value={formData.amount}
-              onChange={(e) => update("amount", e.target.value)}
+              onChange={(e) => {
+                update("amount", e.target.value);
+
+                setErrors({
+                  ...errors,
+                  amount: validateAmount(e.target.value),
+                });
+              }}
             />
 
             <span
@@ -205,10 +258,22 @@ export default function BillForm({ formData, setFormData, billType }) {
           <label className={label}>Notes</label>
 
           <textarea
-            className={`${input} min-h-[80px]`}
+            maxLength={500}
+            className={`${input} min-h-[80px] ${errors?.notes ? "border-red-500" : ""}`}
             value={formData.notes}
-            onChange={(e) => update("notes", e.target.value)}
+            onChange={(e) => {
+              update("notes", e.target.value);
+
+              setErrors({
+                ...errors,
+                notes: validateNotes(e.target.value),
+              });
+            }}
           />
+
+          <p className="text-xs text-gray-500 mt-1 text-right">
+            {formData.notes?.length || 0}/500
+          </p>
         </div>
       </div>
     </AppCard>

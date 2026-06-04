@@ -1,4 +1,9 @@
-export default function UploadActions({ onCancel, onSave, loading }) {
+export default function UploadActions({
+  onCancel,
+  onSave,
+  loading,
+  hasErrors,
+}) {
   return (
     <div
       className="
@@ -32,7 +37,7 @@ export default function UploadActions({ onCancel, onSave, loading }) {
 
       <button
         onClick={onSave}
-        disabled={loading}
+        disabled={loading || hasErrors}
         className="
           px-6
           py-2

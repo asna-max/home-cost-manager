@@ -25,6 +25,8 @@ export default function UploadBill() {
     step,
     formData,
     setFormData,
+    errors,
+    setErrors,
     setStep,
     processFile,
   } = useUploadBill();
@@ -36,6 +38,10 @@ export default function UploadBill() {
   const handleSave = async () => {
     if (!selectedHousehold) {
       return alert("Select household first");
+    }
+
+    if (Object.values(errors).some(Boolean)) {
+      return;
     }
 
     await createBill(formData, file, selectedHousehold);
@@ -107,6 +113,8 @@ export default function UploadBill() {
           <BillForm
             formData={formData}
             setFormData={setFormData}
+            errors={errors}
+            setErrors={setErrors}
             billType={billType}
           />
 
@@ -116,6 +124,7 @@ export default function UploadBill() {
             onCancel={() => setStep("select")}
             onSave={handleSave}
             loading={loading}
+            hasErrors={Object.values(errors).some(Boolean)}
           />
         </div>
       )}
