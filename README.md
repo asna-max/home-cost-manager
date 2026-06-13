@@ -1,245 +1,328 @@
 # 🏠 HomeCostManager
 
-Semesterarbeit im CAS Full Stack Development FS 26.
+Semester Project – CAS Full Stack Development FS26
 
-Web-Applikation zur Verwaltung von Haushaltskosten (Strom, Wasser, Heizung) mit OCR-Unterstützung zur automatischen Rechnungserkennung.
-
----
-
-## 💡 Projektidee
-
-Die Anwendung ermöglicht es, Rechnungen einfach hochzuladen und automatisch relevante Daten zu extrahieren:
-
-- Betrag
-- Verbrauch
-- Fälligkeitsdatum
-- Abrechnungszeitraum
-
-Zusätzlich können mehrere Haushalte verwaltet und Benutzer eingeladen werden.
+HomeCostManager is a full-stack web application for managing household expenses. Users can upload utility bills and automatically extract relevant information using OCR technology.
 
 ---
 
-## 🚀 Features
+# 🎯 Project Goal
 
-- Multi-Household Support
-- Benutzer-Einladungen
-- Home Profile Verwaltung
-- Rechnungs-Upload (PDF / Bild)
-- OCR-basierte Datenerkennung
-- Bills anzeigen und verwalten
+The goal of this project was to develop a modern web application for managing household costs.
+
+The application should:
+
+- Manage utility bills centrally
+- Support multiple households
+- Allow user invitations and collaboration
+- Automatically extract bill data using OCR
+- Provide a responsive user interface
+- Offer secure authentication and authorization
 
 ---
 
-## 🛠️ Technologien
+# ✨ Features
 
-Frontend:
+## User Management
 
-- React (Vite)
+- User registration
+- Login & logout
+- JWT authentication
+- Protected API endpoints
 
-Backend:
+## Household Management
+
+- Create households
+- Edit households
+- Invite members
+- Multi-household support
+
+## Home Profile
+
+- Property information
+- Building type
+- Heating type
+- Number of rooms
+- Solar panel information
+
+## Bill Management
+
+- Upload PDF and image bills
+- Edit bills
+- Delete bills
+- Mark bills as paid
+- Filter by type, status and year
+
+## OCR Extraction
+
+Automatic extraction of:
+
+- Amount
+- Consumption
+- Due date
+- Billing period
+- Bill type
+
+Supported bill types:
+
+- Electricity
+- Water
+- Heating
+
+---
+
+# 🏗️ Architecture
+
+## Frontend
+
+- React
+- Vite
+- Tailwind CSS
+- React Router
+
+## Backend
 
 - Django
 - Django REST Framework
+- JWT Authentication
 
-Weitere:
+## Database
 
-- SQLite (aktuell)
-- PostgreSQL (geplant)
-- OCR API
+- SQLite
+- PostgreSQL (prepared via environment variables)
 
----
+## External Services
 
-## ⚙️ Installation (Quick Start)
-
-### 📋 Voraussetzungen
-
-- Python (>= 3.10)
-- Node.js (>= 18)
-- Ports frei:
-  - Backend: **8000**
-  - Frontend: **5173**
+- OCR.space API
+- Tesseract OCR Fallback
 
 ---
 
-## 🐍 Backend (Django)
+# 📊 Data Model
 
-### 1. Projekt öffnen
+The central entity is the household.
+
+A household contains:
+
+- Members
+- Bills
+- Invitations
+- Home Profile
+
+Users and households are connected through a many-to-many relationship using the `HouseholdMember` model.
+
+---
+
+# ⚙️ Installation
+
+## Requirements
+
+- Python >= 3.10
+- Node.js >= 18
+
+Required ports:
+
+- Backend: 8000
+- Frontend: 5173
+
+---
+
+## Backend Setup
 
 ```bash
 cd core
-```
 
-### 2. Virtuelle Umgebung erstellen
-
-```bash
 python -m venv venv
-```
 
-### 3. Aktivieren
-
-**Windows:**
-
-```bash
+# Windows
 venv\Scripts\activate
-```
 
-**Mac/Linux:**
-
-```bash
+# Linux / macOS
 source venv/bin/activate
-```
 
-### 4. Abhängigkeiten installieren
-
-```bash
 pip install -r ../requirements.txt
-```
 
-### 5. .env Datei erstellen
-
-Pfad: `core/.env`
-
-```env
-SECRET_KEY=your-secret-key
-DEBUG=True
-OCR_API_KEY=your-ocr-api-key
-```
-
-### 6. Migration ausführen
-
-```bash
 python manage.py migrate
-```
 
-### 7. Admin erstellen (optional)
-
-```bash
-python manage.py createsuperuser
-```
-
-### 8. Backend starten
-
-```bash
 python manage.py runserver
 ```
 
-👉 Backend läuft auf:
+Backend URL:
+
+```text
 http://127.0.0.1:8000
+```
 
 ---
 
-## 🌐 Frontend (React)
-
-### 1. Neues Terminal öffnen
+## Frontend Setup
 
 ```bash
 cd frontend
-```
 
-### 2. Dependencies installieren
-
-```bash
 npm install
-```
 
-### 3. Frontend starten
-
-```bash
 npm run dev
 ```
 
-👉 Frontend läuft auf:
+Frontend URL:
+
+```text
 http://localhost:5173
-
----
-
-## 🔐 Login
-
-### Demo Zugang
-
-Benutzername: **demo**
-Passwort: **demo123**
-
-ODER
-
-1. Benutzer registrieren
-2. Login durchführen
-3. Haushalt erstellen oder auswählen
-
----
-
-## 📄 Nutzung (Workflow)
-
-1. "Upload Bill" öffnen
-2. Rechnung hochladen (PDF oder Bild)
-3. OCR analysiert die Rechnung
-4. Daten prüfen und anpassen
-5. Speichern
-
----
-
-## 🧱 Projektstruktur
-
 ```
+
+---
+
+# 🔐 Environment Variables
+
+Create:
+
+```text
+core/.env
+```
+
+Example:
+
+```env
+SECRET_KEY=your-secret-key
+
+DEBUG=True
+
+OCR_API_KEY=your-ocr-api-key
+
+USE_POSTGRES=False
+
+DB_NAME=homecostmanager
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_HOST=localhost
+DB_PORT=5432
+```
+
+> The OCR API key is not included in the repository and must be provided separately.
+
+---
+
+# 🔍 OCR Workflow
+
+1. User uploads a bill
+2. React sends the file to Django
+3. OCR.space processes the file
+4. The parser extracts structured information
+5. The form is automatically populated
+6. User reviews the data
+7. Bill is saved
+
+## OCR Fallback
+
+If OCR.space is unavailable:
+
+```text
+OCR.space
+    ↓
+Error
+    ↓
+Tesseract
+    ↓
+Parser
+    ↓
+Form
+```
+
+---
+
+# 🧪 Testing
+
+Implemented tests include:
+
+- Authentication tests
+- Bill creation tests
+- Bill list tests
+- OCR extraction tests
+- OCR exception handling tests
+
+External OCR calls are mocked to ensure reliable and reproducible tests.
+
+---
+
+# 📁 Project Structure
+
+```text
 core/
-  ├── bills/
-  ├── households/
-  ├── services/
-  ├── users/
+├── bills/
+├── households/
+├── services/
+├── users/
+├── common/
+└── core/
 
 frontend/
-  ├── src/
-  │   ├── components/
-  │   ├── pages/
-  │   ├── services/
+├── src/
+│   ├── features/
+│   ├── services/
+│   ├── shared/
+│   └── layouts/
 ```
 
 ---
 
-## 🔗 API (Auszug)
+# 🔗 API Endpoints
 
-| Endpoint              | Methode  | Beschreibung     |
-| --------------------- | -------- | ---------------- |
-| /api/households/      | GET      | Haushalte laden  |
-| /api/households/{id}/ | PATCH    | Name ändern      |
-| /api/homes/{id}/      | GET/PUT  | Home Profile     |
-| /api/bills/           | GET/POST | Rechnungen       |
-| /api/bills/extract/   | POST     | OCR Verarbeitung |
-
----
-
-## 📸 Screenshots
-
-_TODO_
-
-### Home Profile
-
-![Home](docs/home.png)
-
-### Bills
-
-![Bills](docs/bills.png)
+| Endpoint            | Method  | Description      |
+| ------------------- | ------- | ---------------- |
+| /api/households/    | GET     | Get households   |
+| /api/households/    | POST    | Create household |
+| /api/home-profile/  | GET/PUT | Home profile     |
+| /api/bills/         | GET     | Get bills        |
+| /api/bills/         | POST    | Create bill      |
+| /api/bills/extract/ | POST    | OCR extraction   |
 
 ---
 
-## ⚠️ Hinweise
+# 📸 Screenshots
 
-- `.env` ist nicht im Repository enthalten (Security)
-- `media/` wird nicht versioniert (Uploads)
-- OCR benötigt Internetverbindung
-- CORS ist für Port 5173 konfiguriert
+## ERD
+
+![ERD](docs/pictures/erd.png)
+
+## Dashboard
+
+![Dashboard](docs/pictures/dashboard.png)
+
+## Bills
+
+![Bills](docs/pictures/bills.png)
+
+## Upload Bill
+
+![Upload](docs/pictures/upload.png)
+
+## Home Profile
+
+![Home Profile](docs/pictures/home-profile.png)
 
 ---
 
-## 🚀 Erweiterungen (Future Work)
+# ⚠️ Known Limitations
 
-- Mobile Optimierung
-- Dashboard mit Statistiken
-- Export (PDF / Excel)
-- Verbesserung der OCR-Erkennung
+- OCR quality depends on bill quality
+- OCR.space requires an internet connection
+- Not every bill template can be recognized perfectly
 
 ---
 
-## 👨‍💻 Autor
+# 🚀 Future Work
 
-Ashok Nadesu
+- Advanced OCR recognition
+- Cost analytics and statistics
+- PDF export
+- Excel export
+- Bill payment reminders
+
+---
+
+# 👨‍💻 Author
+
+**Ashok Nadesu**
+
+CAS Full Stack Development FS26
