@@ -285,6 +285,14 @@ frontend/
 
 ![ERD](docs/pictures/erd.png)
 
+## Login
+
+![ERD](docs/pictures/login.png)
+
+## Register
+
+![ERD](docs/pictures/register.png)
+
 ## Dashboard
 
 ![Dashboard](docs/pictures/dashboard.png)
