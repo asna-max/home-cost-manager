@@ -12,8 +12,9 @@ import {
 // API BASE
 // =========================
 
-//export const API_BASE = "http://10.145.21.57:8000";
-export const API_BASE = "http://127.0.0.1:8000";
+//export const API_BASE = "http://10.77.164.57:8000";
+//export const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = import.meta.env.VITE_API_URL;
 
 // =========================
 // AXIOS INSTANCE
