@@ -33,11 +33,10 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    "10.145.21.57",
-]
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "127.0.0.1,localhost"
+).split(",")
 
 
 # =========================
@@ -73,6 +72,7 @@ AUTH_USER_MODEL = 'users.User'
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -111,12 +111,9 @@ TEMPLATES = [
 # DATABASE
 # =========================
 
-USE_POSTGRES = os.getenv(
-    "USE_POSTGRES",
-    "False",
-) == "True"
+DB_ENGINE = os.getenv("DB_ENGINE", "sqlite")
 
-if USE_POSTGRES:
+if DB_ENGINE == "postgres":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -127,7 +124,6 @@ if USE_POSTGRES:
             "PORT": os.getenv("DB_PORT"),
         }
     }
-
 else:
     DATABASES = {
         "default": {
@@ -173,7 +169,8 @@ USE_TZ = True
 # STATIC FILES
 # =========================
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # =========================
@@ -186,11 +183,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # =========================
 # CORS
 # =========================
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://10.145.21.57:5173",
-]
-
+CORS_ALLOWED_ORIGINS = os.getenv(
+    "CORS_ALLOWED_ORIGINS",
+    "http://localhost:5173"
+).split(",")
 
 # =========================
 # DJANGO REST FRAMEWORK
@@ -212,7 +208,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     # ACCESS TOKEN
     "ACCESS_TOKEN_LIFETIME": timedelta(
-        minutes=1,
+        minutes=15,
     ),
 
     # REFRESH TOKEN
@@ -240,6 +236,12 @@ SIMPLE_JWT = {
 # =========================
 OCR_API_KEY = os.getenv("OCR_API_KEY")
 
+# =========================
+# PRODUCTION SECURITY
+# =========================
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # =========================
 # DEFAULT PRIMARY KEY
