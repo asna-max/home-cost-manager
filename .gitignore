@@ -4,9 +4,12 @@ __pycache__/
 
 # Virtual Env
 venv/
+.venv/
 
 # Django
 db.sqlite3
+core/db.sqlite3
+core/staticfiles/
 
 # VSCode
 .vscode/
@@ -14,20 +17,24 @@ db.sqlite3
 # Env
 .env
 .envs
+core/.env
 
 # Node
 node_modules/
+frontend/node_modules/
 
 # Build
 dist/
 build/
+frontend/dist/
 
 # Media / Uploads
+media/
 core/media/
 
 # Images & PDFs
 *.pdf
-*.png
+#*.png
 *.jpg
 *.jpeg
 
